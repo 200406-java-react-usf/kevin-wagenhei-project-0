@@ -1,0 +1,24 @@
+{
+  "name": "kevin-wagenhei-project-0",
+  "version": "1.0.0",
+  "description": "API that allows users to look at Hearthstone cards from the basic set, their stats, and allows them to create their own decks",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^25.4.0",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/200406-java-react-usf/kevin-wagenhei-project-0.git"
+  },
+  "author": "Kevin Wagenheim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/200406-java-react-usf/kevin-wagenhei-project-0/issues"
+  },
+  "homepage": "https://github.com/200406-java-react-usf/kevin-wagenhei-project-0#readme"
+}
