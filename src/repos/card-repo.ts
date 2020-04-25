@@ -71,7 +71,8 @@ export class CardRepository implements CrudRepository<Card>{
 
         return new Promise<Card>((resolve, reject) => {
 
-            if(!isValidObject(newCard)){
+            if(!isValidObject(newCard, 'id')){
+                // *** NEED TO MAKE CUSTOM ERRORS ***
                 reject(new Error('Not a valid Object'));
                 return;
             }
@@ -81,7 +82,7 @@ export class CardRepository implements CrudRepository<Card>{
                 let nameConflict = cardData.filter(card => card.name == newCard.name)
 
                 if(nameConflict.length !== 0){
-
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
                     reject(new Error('Card Already Exists In Database'));
                     return;
 
@@ -97,11 +98,36 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
-    update(updatedCard: Card): Promise<boolean>{
+    update(updatedCard: Card): Promise<Card>{
 
-        return new Promise<boolean>((resolve, reject) => {
+        return new Promise<Card>((resolve, reject) => {
 
+            if (!isValidId(updatedCard.id) || !isValidObject(updatedCard, 'id')){
+                // *** NEED TO MAKE CUSTOM ERRORS ***
+                reject(new Error('Not a valid object/ID'))
+                return;
+            }
 
+            setTimeout(() => {
+
+                let cardToBeUpdated = cardData.find(card => card.id === updatedCard.id);
+
+                if(!cardToBeUpdated){
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
+                    reject(new Error('Card you want to update does not exist'));
+                    return;
+                }
+
+                if(cardToBeUpdated.name !== updatedCard.name || cardToBeUpdated.rarity !== updatedCard.rarity){
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
+                    reject(new Error('Cannot update card name or rarity'));
+                    return;
+                }
+
+                cardToBeUpdated = updatedCard;
+                resolve(cardToBeUpdated);
+
+            },1000);
 
         });
 
