@@ -1,7 +1,7 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
-import {isValidId} from '../util/validator';
+import {isValidId,isValidObject} from '../util/validator';
 
 export class CardRepository implements CrudRepository<Card>{
 
@@ -71,7 +71,27 @@ export class CardRepository implements CrudRepository<Card>{
 
         return new Promise<Card>((resolve, reject) => {
 
+            if(!isValidObject(newCard)){
+                reject(new Error('Not a valid Object'));
+                return;
+            }
 
+            setTimeout(() => {
+
+                let nameConflict = cardData.filter(card => card.name == newCard.name)
+
+                if(nameConflict.length !== 0){
+
+                    reject(new Error('Card Already Exists In Database'));
+                    return;
+
+                }
+
+                newCard.id = (cardData.length) + 1;
+                cardData.push(newCard);
+                resolve(newCard);
+
+            },1000);
 
         });
 
