@@ -98,6 +98,7 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
+    //*** NEED TO SEE WHY I CANT CALL THIS METHOD, THEN GET ALL TO SEE THE UPDATED CARD *** 
     update(updatedCard: Card): Promise<Card>{
 
         return new Promise<Card>((resolve, reject) => {
