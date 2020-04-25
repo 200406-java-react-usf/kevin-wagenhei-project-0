@@ -16,19 +16,23 @@ export class CardRepository implements CrudRepository<Card>{
 
         return new Promise((resolve,reject) =>{
 
-            let card: Card[] = [];
+            setTimeout(()=> {
 
-            for (let cards of cardData){
-                card.push({...cards})
-            }
+                let card: Card[] = [];
 
-            if (card.length == 0){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('No Cards Found in Database'));
-                return; 
-            }
+                for (let cards of cardData){
+                    card.push({...cards});
+                }
 
-            resolve(card);
+                if (card.length == 0){
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
+                    reject(new Error('No Cards Found in Database'));
+                    return; 
+                }
+
+                resolve(card);
+                
+            },1000);
 
         });
 

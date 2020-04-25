@@ -4,6 +4,6 @@ import {CardRepository} from './repos/card-repo';
 
     let cardRepo = CardRepository.getInstance();
 
-    console.log(cardRepo.getAll());
+    console.log(await cardRepo.getAll());
 
 })();
