@@ -1,6 +1,7 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
+import {isValidId} from '../util/validator';
 
 export class CardRepository implements CrudRepository<Card>{
 
@@ -31,7 +32,7 @@ export class CardRepository implements CrudRepository<Card>{
                 }
 
                 resolve(card);
-                
+
             },1000);
 
         });
@@ -40,9 +41,27 @@ export class CardRepository implements CrudRepository<Card>{
 
     getById(id: number): Promise<Card>{
 
-        return new Promise<Card>((reject, resolve) => {
+        return new Promise<Card>((resolve, reject) => {
 
+            if(!isValidId(id)){
+                // *** NEED TO MAKE CUSTOM ERRORS ***
+                reject(new Error('Not Valid Id'));
+                return
+            }
 
+            setTimeout(() => {
+
+                const card: Card = {...cardData.filter(card => card.id === id).pop() as Card};
+
+                if (Object.keys(card).length === 0){
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
+                    reject(new Error('card doesnt exsist'));
+                    return;
+                }
+
+                resolve(card);
+
+            }, 1000);
 
         });
 
