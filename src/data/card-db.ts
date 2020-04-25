@@ -37,4 +37,4 @@ export default [
     new Card(id++, 'Murloc Warleader', 'Epic', 2.9, 2, 58.2, 23000, 56.1),
     new Card(id++, 'Dread Corsair', 'Common', 1.9, 1.9, 52.5, 22000, 46.8)
 
-]
+];
