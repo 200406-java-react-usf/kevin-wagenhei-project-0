@@ -37,13 +37,22 @@ import { Card } from './models/cards';
 
 // })();
 
+// (async function(){
+
+//     let cardRepo = CardRepository.getInstance();
+
+//     console.log(await cardRepo.getByRarity('Legendary'));
+
+// })();
+
 (async function(){
 
     let cardRepo = CardRepository.getInstance();
 
-    console.log(await cardRepo.getByRarity('Legendary'));
+    console.log(await cardRepo.getByName('SI:7 Agent'));
 
 })();
+
 
 
 

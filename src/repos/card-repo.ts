@@ -144,11 +144,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
-    getByRarity(rarity: string): Promise<Card[]>{
+    getByRarity(inputRarity: string): Promise<Card[]>{
 
         return new Promise((resolve,reject) => {
 
-            if(!isValidString(rarity)){
+            if(!isValidString(inputRarity)){
                 // *** NEED TO MAKE CUSTOM ERRORS ***
                 reject(new Error('Not a valid String'));
                 return;
@@ -159,7 +159,7 @@ export class CardRepository implements CrudRepository<Card>{
                 let rarityArray: Card[] = [];
 
                 for (let card of cardData){
-                    if(card.rarity == rarity){
+                    if(card.rarity == inputRarity){
                         rarityArray.push(card);
                     }
                 }
@@ -167,6 +167,31 @@ export class CardRepository implements CrudRepository<Card>{
                 resolve(rarityArray);
 
             }, 1000);
+
+        });
+
+    }
+
+    getByName(inputName: string): Promise<Card>{
+
+        return new Promise<Card>((resolve, reject) => {
+
+            if(!isValidString(inputName)){
+                reject(new Error('Card does not exsist with that name'));
+                return;
+            }
+
+            setTimeout(() => {
+
+                for(let card of cardData){
+
+                    if(card.name == inputName){
+                        resolve(card);
+                    }
+    
+                }
+
+            },1000);
 
         });
 
