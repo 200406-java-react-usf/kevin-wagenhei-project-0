@@ -27,13 +27,21 @@ import { Card } from './models/cards';
 
 // })();
 
+// (async function(){
+
+//     let cardRepo = CardRepository.getInstance();
+
+//     let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, 5, 5, 5, 5);
+
+//     console.log(await cardRepo.update(updateCard));
+
+// })();
+
 (async function(){
 
     let cardRepo = CardRepository.getInstance();
 
-    let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, 5, 5, 5, 5);
-
-    console.log(await cardRepo.update(updateCard));
+    console.log(await cardRepo.getByRarity('Legendary'));
 
 })();
 

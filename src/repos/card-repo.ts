@@ -1,7 +1,7 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
-import {isValidId,isValidObject} from '../util/validator';
+import {isValidId,isValidObject,isValidString} from '../util/validator';
 
 export class CardRepository implements CrudRepository<Card>{
 
@@ -139,6 +139,34 @@ export class CardRepository implements CrudRepository<Card>{
         return new Promise<boolean>((resolve,reject) => {
 
 
+
+        });
+
+    }
+
+    getByRarity(rarity: string): Promise<Card[]>{
+
+        return new Promise((resolve,reject) => {
+
+            if(!isValidString(rarity)){
+                // *** NEED TO MAKE CUSTOM ERRORS ***
+                reject(new Error('Not a valid String'));
+                return;
+            }
+
+            setTimeout(() => {
+
+                let rarityArray: Card[] = [];
+
+                for (let card of cardData){
+                    if(card.rarity == rarity){
+                        rarityArray.push(card);
+                    }
+                }
+
+                resolve(rarityArray);
+
+            }, 1000);
 
         });
 
