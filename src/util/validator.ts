@@ -8,6 +8,18 @@ export const isValidId = (id: number): boolean => {
 
 }
 
+export const isValidString = (...input: string[]): boolean => {
+
+    for (let i of input){
+        if (!i || typeof i !== 'string'){
+            return false;
+        }
+    }
+
+    return true;
+    
+}
+
 export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
 
     return obj && Object.keys(obj).every(key => {
@@ -21,4 +33,6 @@ export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
     });
 
 }
+
+
 
