@@ -46,7 +46,7 @@ export class CardRepository implements CrudRepository<Card>{
             if(!isValidId(id)){
                 // *** NEED TO MAKE CUSTOM ERRORS ***
                 reject(new Error('Not Valid Id'));
-                return
+                return;
             }
 
             setTimeout(() => {
@@ -79,7 +79,7 @@ export class CardRepository implements CrudRepository<Card>{
 
             setTimeout(() => {
 
-                let nameConflict = cardData.filter(card => card.name == newCard.name)
+                let nameConflict = cardData.filter(card => card.name == newCard.name);
 
                 if(nameConflict.length !== 0){
                     // *** NEED TO MAKE CUSTOM ERRORS ***
@@ -105,7 +105,7 @@ export class CardRepository implements CrudRepository<Card>{
 
             if (!isValidId(updatedCard.id) || !isValidObject(updatedCard, 'id')){
                 // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('Not a valid object/ID'))
+                reject(new Error('Not a valid object/ID'));
                 return;
             }
 

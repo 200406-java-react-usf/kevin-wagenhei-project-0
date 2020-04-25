@@ -10,4 +10,4 @@ export default [
     new User(id++, 'LzM', 'Louis Monacello', 'LzM_@me.com', 'password'),
     new User(id++, 'MuffErickson', 'Tyler Erickson', 'MuffErickson@gmail.com', 'password')
 
-]
+];

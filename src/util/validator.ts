@@ -6,7 +6,7 @@ export const isValidId = (id: number): boolean => {
 
     return false;
 
-}
+};
 
 export const isValidString = (...input: string[]): boolean => {
 
@@ -18,7 +18,7 @@ export const isValidString = (...input: string[]): boolean => {
 
     return true;
     
-}
+};
 
 export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
 
@@ -32,7 +32,7 @@ export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
 
     });
 
-}
+};
 
 
 
