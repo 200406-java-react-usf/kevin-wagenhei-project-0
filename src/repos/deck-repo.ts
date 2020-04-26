@@ -130,4 +130,62 @@ export class DeckRepository implements CrudRepository<Deck>{
 
     }
 
+    getByName(input: string): Promise<Deck>{
+
+        return new Promise<Deck>((resolve, reject) => {
+
+            if (!isValidString(input)){
+                reject(new InvalidInputError('Valid string was not input'));
+                return;
+            }
+
+            setTimeout(() => {
+
+                for(let deck of deckData){
+                    if (deck.deckname === input){
+                        resolve(deck);
+                        return;
+                    }
+                }
+
+                reject(new ResourceNotFoundError('Deck with that name does not exist'))
+
+            },1000);
+
+        });
+
+    }
+
+    getByAuthorId(id: number): Promise<Deck[]>{
+        
+        return new Promise<Deck[]>((resolve, reject) => {
+
+            if(!isValidId(id)){
+                reject(new InvalidInputError('Valid ID was not input'));
+                return;
+            }
+
+            setTimeout(() => {
+
+                let authorArray: Deck[] = [];
+
+                for(let deck of deckData){
+                    if(deck.authorId === id){
+                        authorArray.push(deck);
+                    }
+                }
+
+                if(authorArray.length === 0){
+                    reject(new ResourceNotFoundError('Author has not made any decks'));
+                    return;
+                }
+
+                resolve(authorArray);
+
+            }, 1000);
+
+        });
+
+    }
+
 }
