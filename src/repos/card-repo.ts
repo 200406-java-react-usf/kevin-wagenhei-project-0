@@ -70,7 +70,7 @@ export class CardRepository implements CrudRepository<Card>{
         return new Promise<Card>((resolve, reject) => {
 
             if(!isValidObject(newCard, 'id') || !isValidId(newCard.id)){
-                reject(new InvalidInputError('Card Object was not input'));
+                reject(new InvalidInputError('Valid card object was not input'));
                 return;
             }
 
@@ -100,7 +100,7 @@ export class CardRepository implements CrudRepository<Card>{
         return new Promise<Card>((resolve, reject) => {
 
             if (!isValidId(updatedCard.id) || !isValidObject(updatedCard, 'id')){
-                reject(new InvalidInputError('Card Object/ID was not input'));
+                reject(new InvalidInputError('Valid Card object/ID was not input'));
                 return;
             }
 
@@ -142,7 +142,7 @@ export class CardRepository implements CrudRepository<Card>{
         return new Promise((resolve,reject) => {
 
             if(!isValidString(inputRarity)){
-                reject(new InvalidInputError('String was not input'));
+                reject(new InvalidInputError('Valid string was not input'));
                 return;
             }
 
@@ -173,7 +173,7 @@ export class CardRepository implements CrudRepository<Card>{
         return new Promise<Card>((resolve, reject) => {
 
             if(!isValidString(inputName)){
-                reject(new InvalidInputError('String was not input'));
+                reject(new InvalidInputError('Valid string was not input'));
                 return;
             }
 
