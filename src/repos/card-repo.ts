@@ -69,7 +69,7 @@ export class CardRepository implements CrudRepository<Card>{
 
         return new Promise<Card>((resolve, reject) => {
 
-            if(!isValidObject(newCard, 'id') || !isValidId(newCard.id)){
+            if(!isValidObject(newCard, 'id')){
                 reject(new InvalidInputError('Valid card object was not input'));
                 return;
             }
