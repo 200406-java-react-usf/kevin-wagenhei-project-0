@@ -156,4 +156,60 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+    getByUsername(un: string): Promise<User>{
+
+        return new Promise<User>((resolve,reject) => {
+
+            if(!isValidString(un)){
+                // *** NEED TO MAKE CUSTOM ERRORS ***
+                reject(new Error('not a valid string'));
+                return;
+            }
+
+            setTimeout(() => {
+
+                let foundUser = {...userData.filter(user => user.username === un).pop() as User};
+
+                if(Object.keys(foundUser).length === 0){
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
+                    reject(new Error('No User found'));
+                    return;
+                }
+
+                resolve(foundUser);
+
+            }, 1000);
+
+        });
+
+    }
+
+    getByCredentials(un: string, pw: string): Promise<User>{
+
+        return new Promise<User>((resolve, reject) => {
+
+            if(!isValidString(un, pw)){
+                // *** NEED TO MAKE CUSTOM ERRORS ***
+                reject(new Error('not a valid String'));
+                return;
+            }
+
+            setTimeout(() => {
+
+                let foundUser = {...userData.filter(user => user.username === un && user.password === pw).pop() as User};
+
+                if(Object.keys(foundUser).length === 0){
+                    // *** NEED TO MAKE CUSTOM ERRORS ***
+                    reject(new Error('No user found with those creds'));
+                    return;
+                }
+
+                resolve(foundUser);
+
+            },1000);
+
+        });
+
+    }
+
 }

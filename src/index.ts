@@ -81,14 +81,28 @@ import {User} from './models/users';
 
 // })();
 
+// (async function(){
+
+//     let userRepo = UserRepository.getInstance();
+
+//     let updatedUser = new User(1, 'Wagenheim', 'update', 'update@update.com', 'update');
+
+//     console.log(await userRepo.update(updatedUser));
+
+// })();
+
+// (async function(){
+
+//     let userRepo = UserRepository.getInstance();
+
+//     console.log(await userRepo.getByUsername('LzM'));
+
+// })();
+
 (async function(){
 
     let userRepo = UserRepository.getInstance();
 
-    let updatedUser = new User(1, 'Wagenheim', 'update', 'update@update.com', 'update');
-
-    console.log(await userRepo.update(updatedUser));
+    console.log(await userRepo.getByCredentials('CameraGuyJohn', 'password'));
 
 })();
-
-
