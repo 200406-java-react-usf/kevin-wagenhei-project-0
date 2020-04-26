@@ -2,6 +2,7 @@ import {CrudRepository} from './crud-repo';
 import {Deck} from '../models/decks';
 import deckData from '../data/deck-db';
 import {isValidString, isValidObject, isValidId} from '../util/validator';
+import {ResourceNotFoundError, InvalidInputError, ResourceConflictError} from '../errors/errors';
 
 export class DeckRepository implements CrudRepository<Deck>{
 
@@ -26,8 +27,7 @@ export class DeckRepository implements CrudRepository<Deck>{
                 }
 
                 if (decks.length === 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('no decks in database'));
+                    reject(new ResourceNotFoundError('No decks in the database'));
                     return;
                 }
 
@@ -44,8 +44,7 @@ export class DeckRepository implements CrudRepository<Deck>{
         return new Promise<Deck>((resolve, reject) => {
 
             if(!isValidId(id)){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('Id is not valid'));
+                reject(new InvalidInputError('Valid ID was not input'));
                 return;
             }
 
@@ -54,8 +53,7 @@ export class DeckRepository implements CrudRepository<Deck>{
                 let foundDeck: Deck = {...deckData.filter(deck => deck.deckId === id).pop() as Deck};
 
                 if (Object.keys(foundDeck).length === 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('No deck found with that ID'));
+                    reject(new ResourceNotFoundError('No deck found with that ID'));
                     return;
                 }
 
@@ -72,8 +70,7 @@ export class DeckRepository implements CrudRepository<Deck>{
         return new Promise<Deck>((resolve, reject) => {
 
             if(!isValidObject(newDeck, 'deckId')){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('not a valid object passed in'));
+                reject(new InvalidInputError('Valid Object was not input'));
                 return;
             }
 
@@ -82,8 +79,7 @@ export class DeckRepository implements CrudRepository<Deck>{
                 let conflict = deckData.filter(deck => deck.authorId === newDeck.authorId && deck.deckname === newDeck.deckname);
 
                 if(conflict.length !== 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('One author cannot make 2 decks with the same name'));
+                    reject(new ResourceConflictError('One author cannot make two decks with the same name'));
                     return;
                 }
 
@@ -102,8 +98,7 @@ export class DeckRepository implements CrudRepository<Deck>{
         return new Promise<Deck>((resolve,reject) => {
 
             if(!isValidId(updatedDeck.deckId) || !isValidObject(updatedDeck, 'id')){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('Deck object is not valid'));
+                reject(new InvalidInputError('Valid deck object was not input'));
                 return;
             }
 
@@ -112,8 +107,7 @@ export class DeckRepository implements CrudRepository<Deck>{
                 let deckToUpdate = deckData.find(deck => deck.deckId === updatedDeck.deckId);
 
                 if (!deckToUpdate){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('Deck you are trying to update does not exist'));
+                    reject(new ResourceNotFoundError('Deck you are trying to update does not exist'));
                     return;
                 }
 
