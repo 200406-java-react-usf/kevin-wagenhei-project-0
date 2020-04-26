@@ -2,6 +2,7 @@ import {CrudRepository} from './crud-repo';
 import {User} from '../models/users';
 import userData from '../data/user-db';
 import {isValidString, isValidObject, isValidId} from '../util/validator';
+import {ResourceNotFoundError, InvalidInputError, ResourceConflictError, AuthenticationError} from '../errors/errors';
 
 export class UserRepository implements CrudRepository<User> {
 
@@ -26,8 +27,7 @@ export class UserRepository implements CrudRepository<User> {
                 }
 
                 if(users.length === 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('No users in Database'));
+                    reject(new ResourceNotFoundError('No users in database'));
                     return;
                 }
 
@@ -44,8 +44,7 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<User>((resolve,reject) => {
 
             if(!isValidId(id)){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('Not a valid Id'));
+                reject(new InvalidInputError('Valid ID was not input'));
                 return;
             }
 
@@ -54,8 +53,7 @@ export class UserRepository implements CrudRepository<User> {
                 const user: User = userData.filter(user => user.id === id).pop() as User;
 
                 if(Object.keys(user).length == 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('No user with that ID found'));
+                    reject(new ResourceNotFoundError('No user with that ID found'));
                     return;
                 }
 
@@ -72,8 +70,7 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<User> ((resolve,reject) => {
 
             if(!isValidObject(newUser, 'id')){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('Not a valid Object'));
+                reject(new InvalidInputError('Valid Object was not input'));
                 return;
             }
 
@@ -82,10 +79,13 @@ export class UserRepository implements CrudRepository<User> {
                 let usernameConflict = userData.filter(user => user.username == newUser.username);
                 let emailConflict = userData.filter(user => user.email === newUser.email);
 
-                if(usernameConflict.length !== 0 || emailConflict.length !== 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('username or email is already in use'));
+                if(usernameConflict.length !== 0){
+                    reject(new ResourceConflictError('Username already exists'));
                     return;
+                }
+
+                if(emailConflict.length !== 0){
+                    reject(new ResourceConflictError('Email already in use'));
                 }
 
                 newUser.id = (userData.length) + 1;
@@ -103,8 +103,7 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<User>((resolve, reject) => {
 
             if (!isValidObject(updatedUser, 'id') || !isValidId(updatedUser.id)){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('Updated user is not a User Object'));
+                reject(new InvalidInputError('Valid user was not input'));
                 return;
             }
 
@@ -113,14 +112,12 @@ export class UserRepository implements CrudRepository<User> {
                 let userToUpdate = userData.find(user => user.id === updatedUser.id);
 
                 if(!userToUpdate){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('no user found to update'));
+                    reject(new ResourceNotFoundError('No user found to update'));
                     return;
                 }
 
                 if(userToUpdate.username !== updatedUser.username){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('cannot update username'));
+                    reject(new ResourceConflictError('Cannot update username'));
                     return;
                 }
 
@@ -132,8 +129,7 @@ export class UserRepository implements CrudRepository<User> {
                 }).pop();
                 
                 if(conflict){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('email already exisits in the database'));
+                    reject(new ResourceConflictError('Email already exists in the database'));
                     return;
                 }
 
@@ -161,8 +157,7 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<User>((resolve,reject) => {
 
             if(!isValidString(un)){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('not a valid string'));
+                reject(new InvalidInputError('Valid string was not input'));
                 return;
             }
 
@@ -171,8 +166,7 @@ export class UserRepository implements CrudRepository<User> {
                 let foundUser = {...userData.filter(user => user.username === un).pop() as User};
 
                 if(Object.keys(foundUser).length === 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('No User found'));
+                    reject(new ResourceNotFoundError('No user found with that username'));
                     return;
                 }
 
@@ -189,8 +183,7 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<User>((resolve, reject) => {
 
             if(!isValidString(un, pw)){
-                // *** NEED TO MAKE CUSTOM ERRORS ***
-                reject(new Error('not a valid String'));
+                reject(new InvalidInputError('Valid string was not input'));
                 return;
             }
 
@@ -199,8 +192,7 @@ export class UserRepository implements CrudRepository<User> {
                 let foundUser = {...userData.filter(user => user.username === un && user.password === pw).pop() as User};
 
                 if(Object.keys(foundUser).length === 0){
-                    // *** NEED TO MAKE CUSTOM ERRORS ***
-                    reject(new Error('No user found with those creds'));
+                    reject(new AuthenticationError('Invalid credentials'));
                     return;
                 }
 
