@@ -109,7 +109,7 @@ export class CardRepository implements CrudRepository<Card>{
                 let cardToBeUpdated = cardData.find(card => card.id === updatedCard.id);
 
                 if(!cardToBeUpdated){
-                    reject(new ResourceConflictError('Card you want to update does not exist'));
+                    reject(new ResourceNotFoundError('Card you want to update does not exist'));
                     return;
                 }
 
@@ -157,7 +157,7 @@ export class CardRepository implements CrudRepository<Card>{
                 }
 
                 if(rarityArray.length === 0){
-                    reject(new ResourceConflictError('Rarity does not Exist'));
+                    reject(new ResourceNotFoundError('Rarity does not Exist'));
                 }
 
                 resolve(rarityArray);
@@ -188,7 +188,7 @@ export class CardRepository implements CrudRepository<Card>{
     
                 }
 
-                reject(new ResourceConflictError('Card with that name does not exist'));
+                reject(new ResourceNotFoundError('Card with that name does not exist'));
 
             },1000);
 
