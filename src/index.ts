@@ -1,5 +1,7 @@
 import {CardRepository} from './repos/card-repo';
 import { Card } from './models/cards';
+import {UserRepository} from './repos/user-repo';
+import {User} from './models/users';
 
 // (async function(){
 
@@ -45,16 +47,48 @@ import { Card } from './models/cards';
 
 // })();
 
+// (async function(){
+
+//     let cardRepo = CardRepository.getInstance();
+
+//     console.log(await cardRepo.getByName('SI:7 Agent'));
+
+// })();
+
+// (async function(){
+
+//     let userRepo = UserRepository.getInstance();
+
+//     console.log(await userRepo.getAll());
+
+// })();
+
+// (async function(){
+
+//     let userRepo = UserRepository.getInstance();
+
+//     console.log(await userRepo.getById(3));
+
+// })();
+
+// (async function(){
+
+//     let userRepo = UserRepository.getInstance();
+
+//     let newUser = new User(0, 'aaliantro', 'Anthony Aliantro', 'aaliantro@gmail.com', 'password');
+
+//     console.log(await userRepo.save(newUser));
+
+// })();
+
 (async function(){
 
-    let cardRepo = CardRepository.getInstance();
+    let userRepo = UserRepository.getInstance();
 
-    console.log(await cardRepo.getByName('SI:7 Agent'));
+    let updatedUser = new User(1, 'Wagenheim', 'update', 'update@update.com', 'update');
+
+    console.log(await userRepo.update(updatedUser));
 
 })();
-
-
-
-
 
 
