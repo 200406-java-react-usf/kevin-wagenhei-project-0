@@ -34,5 +34,11 @@ export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
 
 };
 
+export default {
+    isValidId,
+    isValidObject,
+    isValidString
+};
+
 
 
