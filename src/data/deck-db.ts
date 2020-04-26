@@ -36,7 +36,7 @@ let deckOneArray: Card[] = [
     new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
     new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
 
-] 
+];
 
 let deckTwoArray: Card[] = [
 
@@ -71,11 +71,11 @@ let deckTwoArray: Card[] = [
     new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
     new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
 
-] 
+];
 
 export default [
 
     new Deck(id++, 1, 'Kevin\'s Deck', deckOneArray),
     new Deck(id++, 3, 'Nick\'s Deck', deckTwoArray)
 
-]
+];
