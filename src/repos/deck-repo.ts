@@ -148,7 +148,7 @@ export class DeckRepository implements CrudRepository<Deck>{
                     }
                 }
 
-                reject(new ResourceNotFoundError('Deck with that name does not exist'))
+                reject(new ResourceNotFoundError('Deck with that name does not exist'));
 
             },1000);
 
