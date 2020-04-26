@@ -128,7 +128,7 @@ export class UserRepository implements CrudRepository<User> {
                     if(user.id === updatedUser.id){
                         return false;
                     }
-                    return user.email == updatedUser.email
+                    return user.email == updatedUser.email;
                 }).pop();
                 
                 if(conflict){
