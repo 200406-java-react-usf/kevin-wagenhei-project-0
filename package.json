@@ -18,6 +18,7 @@
     "typescript": "^3.8.3"
   },
   "scripts": {
+    "start": "tsc && node ./build/index.js",
     "test": "jest"
   },
   "repository": {
