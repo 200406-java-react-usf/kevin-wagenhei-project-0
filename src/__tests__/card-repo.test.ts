@@ -44,6 +44,30 @@ describe('Tests for the Card Repository', () => {
 
     });
 
+    test('Should return 3 cards when looking for Legendary cards using get by rarity method', async () => {
+
+        expect.assertions(2);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        let result = await sut.getInstance().getByRarity('Legendary');
+
+        expect(result).toBeTruthy();
+        expect(result.length).toEqual(3);
+
+    });
+
+    test('Should return 10 cards when looking for Rare cards using get by rarity method', async () => {
+
+        expect.assertions(2);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        let result = await sut.getInstance().getByRarity('Rare');
+
+        expect(result).toBeTruthy();
+        expect(result.length).toEqual(10);
+
+    });
+
     test('Should return correct user when valid ID is given', async () => {
 
         expect.assertions(3);
@@ -249,6 +273,197 @@ describe('Tests for the Card Repository', () => {
 
     });
 
+    test('Should return ResourceNotFoundError when given an updated card has an unknown ID', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        let updateCard = new Card(99999, 'Alexstraza', 'Legendary', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card has an invalid ID(decimal)', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        let updateCard = new Card(18.5, 'Alexstraza', 'Legendary', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card has an invalid ID(negative)', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        let updateCard = new Card(-1, 'Alexstraza', 'Legendary', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return ResourceConflictError when given an updated card with a changed name', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        let updateCard = new Card(11, 'meow', 'Legendary', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof ResourceConflictError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return ResourceConflictError when given an updated card with a changed rarity', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        let updateCard = new Card(11, 'Alexstraza', 'meow', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof ResourceConflictError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy name', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, '', 'Legendary', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy rarity', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, 'Alexstraza', '', 5, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy percentInDecks', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, 'Alexstraza', 'Legendary', null, 5, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy copies value', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, null, 5, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy deckWinRate', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, 5, null, 5, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy timesPlayed value', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, 5, 5, null, 5);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given an updated card with a falsy playedWinRate', async () => {
+
+        expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, 5, 5, 5, null);
+
+        try{
+            await sut.getInstance().update(updateCard);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
 
 });
 
