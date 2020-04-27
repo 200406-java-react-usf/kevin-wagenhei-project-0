@@ -68,6 +68,96 @@ describe('Tests for the Card Repository', () => {
 
     });
 
+    test('Should return ResourceNotFoundError when given a string thats not a rarity', async () => {
+
+        expect.assertions(1);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        try{
+            await sut.getInstance().getByRarity('meow');
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given a falsy string', async () => {
+
+        expect.assertions(1);
+        Validator.isValidString = jest.fn().mockReturnValue(false);
+
+        try{
+            await sut.getInstance().getByRarity('');
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given a non-string', async () => {
+
+        expect.assertions(1);
+        Validator.isValidString = jest.fn().mockReturnValue(false);
+
+        try{
+            await sut.getInstance().getByRarity(null);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return a card when given a valid card that exists', async () => {
+
+        expect.assertions(2);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        let result = await sut.getInstance().getByName('Edwin Vancleef');
+
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(7);
+
+    });
+
+    test('Should return ResourceNotFoundError when given a name that doesnt exist', async () => {
+
+        expect.assertions(1);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        try{
+            await sut.getInstance().getByName('meow');
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given a falsy string', async () => {
+
+        expect.assertions(1);
+        Validator.isValidString = jest.fn().mockReturnValue(false);
+
+        try{
+            await sut.getInstance().getByName('');
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
+    test('Should return InvalidInputError when given a falsy value', async () => {
+
+        expect.assertions(1);
+        Validator.isValidString = jest.fn().mockReturnValue(false);
+
+        try{
+            await sut.getInstance().getByName(null);
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBeTruthy();
+        }
+
+    });
+
     test('Should return correct user when valid ID is given', async () => {
 
         expect.assertions(3);
