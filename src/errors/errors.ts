@@ -1,5 +1,3 @@
-import { runInThisContext } from "vm";
-
 class ResourceNotFoundError {
 
     message: string;
@@ -101,5 +99,6 @@ export {
     ResourceNotFoundError,
     AuthenticationError,
     ResourceConflictError,
-    InvalidInputError
+    InvalidInputError,
+    AuthorizationError
 };
