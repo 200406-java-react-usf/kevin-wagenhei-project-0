@@ -44,11 +44,37 @@ export const isEmptyObject = (obj: any) => {
 
 };
 
+export const isPropertyOf = (prop: string, type: any) => {
+
+    if(!prop || !type){
+
+        return false;
+
+    }
+
+    let typeCreator = <T>(Type: (new () => T)): T => {
+
+        return new Type();
+
+    }
+
+    let tempInstance;
+    try{
+        tempInstance = typeCreator(type);
+    } catch {
+        return false;
+    }
+
+    return Object.keys(tempInstance).includes(prop);
+
+};
+
 export default {
     isValidId,
     isValidObject,
     isValidString,
-    isEmptyObject
+    isEmptyObject,
+    isPropertyOf
 };
 
 
