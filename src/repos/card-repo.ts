@@ -1,14 +1,13 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
-import {isValidId,isValidObject,isValidString} from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError} from '../errors/errors';
 
 export class CardRepository implements CrudRepository<Card>{
 
     getAll(): Promise<Card[]>{
 
-        return new Promise((resolve,reject) =>{
+        return new Promise((resolve) =>{
 
             setTimeout(()=> {
 
@@ -23,7 +22,7 @@ export class CardRepository implements CrudRepository<Card>{
 
     getById(id: number): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
+        return new Promise<Card>((resolve) => {
 
             setTimeout(() => {
 
@@ -38,7 +37,7 @@ export class CardRepository implements CrudRepository<Card>{
 
     save(newCard: Card): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
+        return new Promise<Card>((resolve) => {
 
             setTimeout(() => {
 
@@ -52,7 +51,6 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
-    //*** NEED TO SEE WHY I CANT CALL THIS METHOD, THEN GET ALL TO SEE THE UPDATED CARD *** 
     update(updatedCard: Card): Promise<Card>{
 
         return new Promise<Card>((resolve, reject) => {
@@ -92,11 +90,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     getByRarity(inputRarity: string): Promise<Card[]>{
 
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve) => {
 
             setTimeout(() => {
 
-                let rarityArray: Card[] = cardData.filter(card => card.rarity === inputRarity);
+                let rarityArray = cardData.filter(card => card.rarity === inputRarity);
                 resolve(rarityArray);
 
             }, 1000);
@@ -107,25 +105,12 @@ export class CardRepository implements CrudRepository<Card>{
 
     getByName(inputName: string): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
-
-            if(!isValidString(inputName)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        return new Promise<Card>((resolve) => {
 
             setTimeout(() => {
 
-                for(let card of cardData){
-
-                    if(card.name == inputName){
-                        resolve(card);
-                        return;
-                    }
-    
-                }
-
-                reject(new ResourceNotFoundError('Card with that name does not exist'));
+                let card = {...cardData.find(card => card.name === inputName)};
+                resolve(card);
 
             },1000);
 
