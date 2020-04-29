@@ -74,13 +74,34 @@ export class CardService {
                 return;
             }
 
-            let cards = await this.cardRepo.getByRarity(rarity);
+            let cards = [...await this.cardRepo.getByRarity(rarity)];
 
             if(cards.length === 0){
                 return reject(new ResourceNotFoundError('Rarity does not Exist'));
             }
 
             resolve(cards);
+
+        });
+
+    }
+    
+    getCardByName(name: string): Promise<Card>{
+
+        return new Promise<Card>(async (resolve,reject) => {
+
+            if(!isValidString(name)){
+                reject(new InvalidInputError('Valid string was not input'));
+                return;
+            }
+
+            let card = await this.cardRepo.getByName(name);
+
+            if(!card){
+                return reject(new ResourceNotFoundError('Card with that name does not exist'));
+            }
+
+            resolve(card);
 
         });
 
