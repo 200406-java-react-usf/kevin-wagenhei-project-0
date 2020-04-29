@@ -34,10 +34,21 @@ export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
 
 };
 
+export const isEmptyObject = (obj: any) => {
+
+    if(!obj || Object.keys(obj).length === 0){
+        return false;
+    }
+
+    return true;
+
+};
+
 export default {
     isValidId,
     isValidObject,
-    isValidString
+    isValidString,
+    isEmptyObject
 };
 
 
