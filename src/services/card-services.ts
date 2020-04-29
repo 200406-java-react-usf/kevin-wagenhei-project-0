@@ -26,18 +26,13 @@ export class CardService {
 
         return new Promise<Card[]>( async (resolve,reject) => {
 
-            let cards: Card[] = [];
             let result = await this.cardRepo.getAll();
 
-            for (let card of result){
-                cards.push({...card});
-            }
-
-            if(cards.length === 0){
+            if(result.length === 0){
                 return reject(new ResourceNotFoundError('No cards found in the database.'));
             }
 
-            resolve(cards);
+            resolve(result);
 
         });
 
