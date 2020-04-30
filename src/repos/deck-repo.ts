@@ -57,11 +57,6 @@ export class DeckRepository implements CrudRepository<Deck>{
 
         return new Promise<Deck>((resolve,reject) => {
 
-            if(!isValidId(updatedDeck.deckId) || !isValidObject(updatedDeck, 'id')){
-                reject(new InvalidInputError('Valid deck object was not input'));
-                return;
-            }
-
             setTimeout(() => {
 
                 let deckToUpdate = deckData.find(deck => deck.deckId === updatedDeck.deckId);
@@ -94,21 +89,10 @@ export class DeckRepository implements CrudRepository<Deck>{
 
         return new Promise<Deck>((resolve, reject) => {
 
-            if (!isValidString(input)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
-
             setTimeout(() => {
 
-                for(let deck of deckData){
-                    if (deck.deckname === input){
-                        resolve(deck);
-                        return;
-                    }
-                }
-
-                reject(new ResourceNotFoundError('Deck with that name does not exist'));
+                let card = {...deckData.find(deck => deck.deckname === input)};
+                resolve(card);
 
             },1000);
 
@@ -118,29 +102,12 @@ export class DeckRepository implements CrudRepository<Deck>{
 
     getByAuthorId(id: number): Promise<Deck[]>{
         
-        return new Promise<Deck[]>((resolve, reject) => {
-
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        return new Promise<Deck[]>((resolve, reject) => {            
 
             setTimeout(() => {
-
-                let authorArray: Deck[] = [];
-
-                for(let deck of deckData){
-                    if(deck.authorId === id){
-                        authorArray.push(deck);
-                    }
-                }
-
-                if(authorArray.length === 0){
-                    reject(new ResourceNotFoundError('Author has not made any decks'));
-                    return;
-                }
-
-                resolve(authorArray);
+                
+                let decks = deckData.filter(deck => deck.authorId === id);
+                resolve(decks);
 
             }, 1000);
 
