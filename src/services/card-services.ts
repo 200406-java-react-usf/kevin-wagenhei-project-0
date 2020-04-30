@@ -9,10 +9,8 @@ import {
 } from '../util/validator';
 import {
     ResourceNotFoundError,
-    AuthenticationError,
     ResourceConflictError,
-    InvalidInputError,
-    AuthorizationError
+    InvalidInputError
 } from '../errors/errors';
 import cardData from '../data/card-db';
 
