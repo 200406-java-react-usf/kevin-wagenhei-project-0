@@ -11,8 +11,7 @@ import {
     ResourceNotFoundError,
     AuthenticationError,
     ResourceConflictError,
-    InvalidInputError,
-    AuthorizationError
+    InvalidInputError
 } from '../errors/errors';
 import userData from '../data/user-db';
 
@@ -56,6 +55,47 @@ export class UserService{
             }
 
             resolve(result);
+
+        });
+
+    }
+
+    getUserByUniqueKey(queryObj: any): Promise<User>{
+
+        return new Promise<User> (async (resolve, reject) => {
+
+            try {
+
+                let queryKeys = Object.keys(queryObj);
+
+                if(!queryKeys.every(key => isPropertyOf(key, User))){
+                    return reject(new InvalidInputError());
+                }
+
+                let key = queryKeys[0];
+                let val = queryKeys[key];
+
+                if(key === 'id'){
+                    return resolve(await this.getUserById(+key));
+                }
+
+                if(!isValidString(val)){
+                    return reject(new InvalidInputError());
+                }
+
+                let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
+
+                if(!isEmptyObject(user)){
+                    return reject(new ResourceNotFoundError());
+                }
+
+                resolve(user);
+
+            } catch (e) {
+
+                reject(e);
+
+            }
 
         });
 
