@@ -92,7 +92,7 @@ export class CardService {
 
             let card = await this.cardRepo.getByName(name);
 
-            if(!card){
+            if(!isEmptyObject(card)){
                 return reject(new ResourceNotFoundError('Card with that name does not exist'));
             }
 
