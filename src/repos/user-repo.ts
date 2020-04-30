@@ -1,14 +1,13 @@
 import {CrudRepository} from './crud-repo';
 import {User} from '../models/users';
 import userData from '../data/user-db';
-import {isValidString, isValidObject, isValidId} from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, ResourceConflictError, AuthenticationError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError} from '../errors/errors';
 
 export class UserRepository implements CrudRepository<User> {
 
     getAll(): Promise<User[]>{
 
-        return new Promise<User[]>((resolve, reject) => {
+        return new Promise<User[]>((resolve) => {
 
             setTimeout(() => {
 
@@ -23,7 +22,7 @@ export class UserRepository implements CrudRepository<User> {
 
     getById(id: number): Promise<User>{
 
-        return new Promise<User>((resolve,reject) => {
+        return new Promise<User>((resolve) => {
 
             setTimeout(() => {
 
@@ -36,9 +35,24 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+    getUserByUniqueKey(key: string, val: string): Promise<User> {
+
+        return new Promise<User>((resolve) => {
+
+            setTimeout(() => {
+
+                const user = {...userData.find(user => user[key] === val)};
+                resolve(user);
+
+            }, 1000);
+
+        });
+
+    }
+
     save(newUser: User): Promise<User>{
 
-        return new Promise<User> ((resolve,reject) => {
+        return new Promise<User> ((resolve) => {
 
             setTimeout(() => {
 
@@ -103,7 +117,7 @@ export class UserRepository implements CrudRepository<User> {
 
     getByUsername(un: string): Promise<User>{
 
-        return new Promise<User>((resolve,reject) => {
+        return new Promise<User>((resolve) => {
 
             setTimeout(() => {
 
@@ -118,7 +132,7 @@ export class UserRepository implements CrudRepository<User> {
 
     getByCredentials(un: string, pw: string): Promise<User>{
 
-        return new Promise<User>((resolve, reject) => {
+        return new Promise<User>((resolve) => {
 
             setTimeout(() => {
 
