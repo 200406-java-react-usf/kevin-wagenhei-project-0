@@ -35,6 +35,21 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
+    getCardByUniqueKey(key: string, val: string): Promise<Card> {
+
+        return new Promise<Card>((resolve) => {
+
+            setTimeout(() => {
+
+                const card = {...cardData.find(card => card[key] === val)};
+                resolve(card);
+
+            }, 1000);
+
+        });
+
+    }
+
     save(newCard: Card): Promise<Card>{
 
         return new Promise<Card>((resolve) => {

@@ -130,6 +130,47 @@ export class CardService {
 
     }
 
+    getCardByUniqueKey(queryObj: any): Promise<Card>{
+
+        return new Promise<Card> (async (resolve, reject) => {
+
+            try {
+
+                let queryKeys = Object.keys(queryObj);
+
+                if(!queryKeys.every(key => isPropertyOf(key, Card))){
+                    return reject(new InvalidInputError());
+                }
+
+                let key = queryKeys[0];
+                let val = queryKeys[key];
+
+                if(key === 'id'){
+                    return resolve(await this.getCardById(+key));
+                }
+
+                if(!isValidString(val)){
+                    return reject(new InvalidInputError());
+                }
+
+                let card = {...await this.cardRepo.getCardByUniqueKey(key, val)};
+
+                if(!isEmptyObject(card)){
+                    return reject(new ResourceNotFoundError());
+                }
+
+                resolve(card);
+
+            } catch (e) {
+
+                reject(e);
+
+            }
+
+        });
+
+    }
+
     updateCard(updatedCard: Card): Promise<Card>{
 
         return new Promise<Card>(async (resolve,reject) => {
