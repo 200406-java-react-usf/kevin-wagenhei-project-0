@@ -34,3 +34,16 @@ CardRouter.get('/:id', async (req, resp) => {
     resp.send();
 
 });
+
+CardRouter.post('', async (req,resp) => {
+
+    try{
+        let payload = await cardService.addNewCard(req.body);
+        resp.status(201).json(payload);
+    } catch(e){
+        resp.status(e.statusCode).json(e)
+    }
+
+    resp.send();
+
+});
