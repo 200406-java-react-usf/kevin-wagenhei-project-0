@@ -4,216 +4,23 @@ import {UserRepository} from './repos/user-repo';
 import {User} from './models/users';
 import {DeckRepository} from './repos/deck-repo';
 import {Deck} from './models/decks';
+import {CardService} from './services/card-services';
+import AppConfig from './config/app';
+import {CardRouter} from './routers/card-router';
+import {DeckRouter} from './routers/deck-router';
+import { UserRouter } from './routers/user-router';
+import express from 'express';
 
-// (async function(){
+const app = express();
 
-//     let cardRepo = CardRepository.getInstance();
+app.use('/', express.json());
+app.use('/cards', CardRouter);
+app.use('/decks', DeckRouter);
+app.use('/users', UserRouter);
 
-//     console.log(await cardRepo.getAll());
+app.listen(8080, () => {
 
-// })();
+    console.log('App running on port 8080');
 
-// (async function(){
-
-//     let cardRepo = CardRepository.getInstance();
-
-//     console.log(await cardRepo.getById(11));
-
-// })();
-
-// (async function(){
-
-//     let cardRepo = CardRepository.getInstance();
-
-//     let newCard = new Card(0, 'Knife Juggler', 'Rare', 1.3, 1.8, 47.8, 21000, 43.1);
-
-//     console.log(await cardRepo.save(newCard));
-
-// })();
-
-// (async function(){
-
-//     let cardRepo = CardRepository.getInstance();
-
-//     let updateCard = new Card(11, 'Alexstraza', 'Legendary', 5, 5, 5, 5, 5);
-
-//     console.log(await cardRepo.update(updateCard));
-
-// })();
-
-// (async function(){
-
-//     let cardRepo = CardRepository.getInstance();
-
-//     console.log(await cardRepo.getByRarity('Legendary'));
-
-// })();
-
-// (async function(){
-
-//     let cardRepo = CardRepository.getInstance();
-
-//     console.log(await cardRepo.getByName('SI:7 Agent'));
-
-// })();
-
-// (async function(){
-
-//     let userRepo = UserRepository.getInstance();
-
-//     console.log(await userRepo.getAll());
-
-// })();
-
-// (async function(){
-
-//     let userRepo = UserRepository.getInstance();
-
-//     console.log(await userRepo.getById(3));
-
-// })();
-
-// (async function(){
-
-//     let userRepo = UserRepository.getInstance();
-
-//     let newUser = new User(0, 'aaliantro', 'Anthony Aliantro', 'aaliantro@gmail.com', 'password');
-
-//     console.log(await userRepo.save(newUser));
-
-// })();
-
-// (async function(){
-
-//     let userRepo = UserRepository.getInstance();
-
-//     let updatedUser = new User(1, 'Wagenheim', 'update', 'update@update.com', 'update');
-
-//     console.log(await userRepo.update(updatedUser));
-
-// })();
-
-// (async function(){
-
-//     let userRepo = UserRepository.getInstance();
-
-//     console.log(await userRepo.getByUsername('LzM'));
-
-// })();
-
-// (async function(){
-
-//     let userRepo = UserRepository.getInstance();
-
-//     console.log(await userRepo.getByCredentials('CameraGuyJohn', 'password'));
-
-// })();
-
-// (async function(){
-
-//     let deckRepo = DeckRepository.getInstance();
-
-//     console.log(await deckRepo.getAll());
-
-// })();
-
-// (async function(){
-
-//     let deckRepo = DeckRepository.getInstance();
-
-//     console.log(await deckRepo.getById(2));
-
-// })();
-
-// (async function(){
-
-//     let deckRepo = DeckRepository.getInstance();
-
-//     let newDeckArray: Card[] = [
-
-//         new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
-//         new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
-//         new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
-//         new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
-//         new Card(23, 'Loot Hoarder', 'Common', 2.4, 1.8, 46.5, 26000, 42.4),
-//         new Card(12, 'Power of the Wild', 'Common', 3.7, 1.9, 53.5, 47000, 55.6),
-//         new Card(24, 'Far Sight', 'Epic', 2.1, 1.5, 51.5, 24000, 46.3),
-//         new Card(16, 'Doomsayer', 'Epic', 6.5, 1, 55.3, 36000, 45.6),
-//         new Card(25, 'Brightwing', 'Legendary', 1.3, 1, 48.5, 24000, 50.2),
-//         new Card(7, 'Edwin Vancleef', 'Legendary', 11.6, 1, 57.9, 63000, 60.8),
-//         new Card(29, 'Murloc Warleader', 'Epic', 2.9, 2, 58.2, 23000, 56.1),
-//         new Card(13, 'Leper Gnome', 'Common', 4.5, 1.9, 57.8, 41000, 52.8),
-//         new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
-//         new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
-//         new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49),
-//         new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
-//         new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
-//         new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
-//         new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
-//         new Card(23, 'Loot Hoarder', 'Common', 2.4, 1.8, 46.5, 26000, 42.4),
-//         new Card(12, 'Power of the Wild', 'Common', 3.7, 1.9, 53.5, 47000, 55.6),
-//         new Card(24, 'Far Sight', 'Epic', 2.1, 1.5, 51.5, 24000, 46.3),
-//         new Card(16, 'Doomsayer', 'Epic', 6.5, 1, 55.3, 36000, 45.6),
-//         new Card(25, 'Brightwing', 'Legendary', 1.3, 1, 48.5, 24000, 50.2),
-//         new Card(7, 'Edwin Vancleef', 'Legendary', 11.6, 1, 57.9, 63000, 60.8),
-//         new Card(29, 'Murloc Warleader', 'Epic', 2.9, 2, 58.2, 23000, 56.1),
-//         new Card(13, 'Leper Gnome', 'Common', 4.5, 1.9, 57.8, 41000, 52.8),
-//         new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
-//         new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
-//         new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
-    
-//     ]
-
-//     let newDeck = new Deck(0,4,'Louis\' Deck', newDeckArray);
-
-//     console.log(await deckRepo.save(newDeck));
-
-// })();
-
-// (async function(){
-
-//     let deckRepo = DeckRepository.getInstance();
-
-//     let updatedDeckArray: Card[] = [
-
-//         new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
-//         new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
-//         new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
-//         new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
-//         new Card(23, 'Loot Hoarder', 'Common', 2.4, 1.8, 46.5, 26000, 42.4),
-//         new Card(12, 'Power of the Wild', 'Common', 3.7, 1.9, 53.5, 47000, 55.6),
-//         new Card(24, 'Far Sight', 'Epic', 2.1, 1.5, 51.5, 24000, 46.3),
-//         new Card(16, 'Doomsayer', 'Epic', 6.5, 1, 55.3, 36000, 45.6),
-//         new Card(25, 'Brightwing', 'Legendary', 1.3, 1, 48.5, 24000, 50.2),
-//         new Card(7, 'Edwin Vancleef', 'Legendary', 11.6, 1, 57.9, 63000, 60.8),
-//         new Card(29, 'Murloc Warleader', 'Epic', 2.9, 2, 58.2, 23000, 56.1),
-//         new Card(13, 'Leper Gnome', 'Common', 4.5, 1.9, 57.8, 41000, 52.8),
-//         new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
-//         new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
-//         new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49),
-//         new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
-//         new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
-//         new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
-//         new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
-//         new Card(23, 'Loot Hoarder', 'Common', 2.4, 1.8, 46.5, 26000, 42.4),
-//         new Card(12, 'Power of the Wild', 'Common', 3.7, 1.9, 53.5, 47000, 55.6),
-//         new Card(24, 'Far Sight', 'Epic', 2.1, 1.5, 51.5, 24000, 46.3),
-//         new Card(16, 'Doomsayer', 'Epic', 6.5, 1, 55.3, 36000, 45.6),
-//         new Card(25, 'Brightwing', 'Legendary', 1.3, 1, 48.5, 24000, 50.2),
-//         new Card(7, 'Edwin Vancleef', 'Legendary', 11.6, 1, 57.9, 63000, 60.8),
-//         new Card(29, 'Murloc Warleader', 'Epic', 2.9, 2, 58.2, 23000, 56.1),
-//         new Card(13, 'Leper Gnome', 'Common', 4.5, 1.9, 57.8, 41000, 52.8),
-//         new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
-//         new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
-//         new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
-    
-//     ]
-
-//     let updatedDeck = new Deck(2,3,'Updated Deck', updatedDeckArray);
-
-//     console.log(await deckRepo.update(updatedDeck));
-
-// })();
-
-
+});
 

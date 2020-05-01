@@ -1,36 +1,17 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
-import {isValidId,isValidObject,isValidString} from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError} from '../errors/errors';
 
 export class CardRepository implements CrudRepository<Card>{
 
-    private static instance: CardRepository;
-
-    private constructor() {}
-
-    static getInstance(){
-        return !CardRepository.instance ? CardRepository.instance = new CardRepository : CardRepository.instance;
-    }
-
     getAll(): Promise<Card[]>{
 
-        return new Promise((resolve,reject) =>{
+        return new Promise((resolve) =>{
 
             setTimeout(()=> {
 
-                let card: Card[] = [];
-
-                for (let cards of cardData){
-                    card.push({...cards});
-                }
-
-                if (card.length == 0){
-                    reject(new ResourceNotFoundError('No Cards Found in Database'));
-                    return; 
-                }
-
+                let card: Card[] = cardData;
                 resolve(card);
 
             },1000);
@@ -41,22 +22,26 @@ export class CardRepository implements CrudRepository<Card>{
 
     getById(id: number): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
-
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Invalid ID was input'));
-                return;
-            }
+        return new Promise<Card>((resolve) => {
 
             setTimeout(() => {
 
-                const card: Card = {...cardData.filter(card => card.id === id).pop() as Card};
+                const card: Card = {...cardData.find(card => card.id === id)};
+                resolve(card);
 
-                if (Object.keys(card).length === 0){
-                    reject(new ResourceNotFoundError('Card with that ID does not exist'));
-                    return;
-                }
+            }, 1000);
 
+        });
+
+    }
+
+    getCardByUniqueKey(key: string, val: string): Promise<Card> {
+
+        return new Promise<Card>((resolve) => {
+
+            setTimeout(() => {
+
+                const card = {...cardData.find(card => card[key] === val)};
                 resolve(card);
 
             }, 1000);
@@ -67,22 +52,9 @@ export class CardRepository implements CrudRepository<Card>{
 
     save(newCard: Card): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
-
-            if(!isValidObject(newCard, 'id')){
-                reject(new InvalidInputError('Valid card object was not input'));
-                return;
-            }
+        return new Promise<Card>((resolve) => {
 
             setTimeout(() => {
-
-                let nameConflict = cardData.filter(card => card.name == newCard.name);
-
-                if(nameConflict.length !== 0){
-                    reject(new ResourceConflictError('Card Already Exists In Database'));
-                    return;
-
-                }
 
                 newCard.id = (cardData.length) + 1;
                 cardData.push(newCard);
@@ -94,15 +66,9 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
-    //*** NEED TO SEE WHY I CANT CALL THIS METHOD, THEN GET ALL TO SEE THE UPDATED CARD *** 
     update(updatedCard: Card): Promise<Card>{
 
         return new Promise<Card>((resolve, reject) => {
-
-            if (!isValidId(updatedCard.id) || !isValidObject(updatedCard, 'id')){
-                reject(new InvalidInputError('Valid Card object/ID was not input'));
-                return;
-            }
 
             setTimeout(() => {
 
@@ -139,27 +105,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     getByRarity(inputRarity: string): Promise<Card[]>{
 
-        return new Promise((resolve,reject) => {
-
-            if(!isValidString(inputRarity)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        return new Promise((resolve) => {
 
             setTimeout(() => {
 
-                let rarityArray: Card[] = [];
-
-                for (let card of cardData){
-                    if(card.rarity == inputRarity){
-                        rarityArray.push(card);
-                    }
-                }
-
-                if(rarityArray.length === 0){
-                    reject(new ResourceNotFoundError('Rarity does not Exist'));
-                }
-
+                let rarityArray = cardData.filter(card => card.rarity === inputRarity);
                 resolve(rarityArray);
 
             }, 1000);
@@ -170,25 +120,12 @@ export class CardRepository implements CrudRepository<Card>{
 
     getByName(inputName: string): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
-
-            if(!isValidString(inputName)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        return new Promise<Card>((resolve) => {
 
             setTimeout(() => {
 
-                for(let card of cardData){
-
-                    if(card.name == inputName){
-                        resolve(card);
-                        return;
-                    }
-    
-                }
-
-                reject(new ResourceNotFoundError('Card with that name does not exist'));
+                let card = {...cardData.find(card => card.name === inputName)};
+                resolve(card);
 
             },1000);
 

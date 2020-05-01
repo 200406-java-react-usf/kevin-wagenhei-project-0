@@ -6,30 +6,13 @@ import {ResourceNotFoundError, InvalidInputError, ResourceConflictError} from '.
 
 export class DeckRepository implements CrudRepository<Deck>{
 
-    private static instance: DeckRepository;
-
-    constructor () {}
-
-    static getInstance(){
-        return !DeckRepository.instance ? DeckRepository.instance = new DeckRepository() : DeckRepository.instance;
-    }
-
     getAll(): Promise<Deck[]>{
 
         return new Promise<Deck[]>((resolve,reject) => {
 
             setTimeout(() => {
 
-                let decks: Deck[] = [];
-
-                for (let deck of deckData){
-                    decks.push({...deck});
-                }
-
-                if (decks.length === 0){
-                    reject(new ResourceNotFoundError('No decks in the database'));
-                    return;
-                }
+                let decks: Deck[] = deckData;
 
                 resolve(decks);
 
@@ -43,20 +26,9 @@ export class DeckRepository implements CrudRepository<Deck>{
 
         return new Promise<Deck>((resolve, reject) => {
 
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
-
             setTimeout(() => {
 
-                let foundDeck: Deck = {...deckData.filter(deck => deck.deckId === id).pop() as Deck};
-
-                if (Object.keys(foundDeck).length === 0){
-                    reject(new ResourceNotFoundError('No deck found with that ID'));
-                    return;
-                }
-
+                let foundDeck: Deck = {...deckData.find(deck => deck.deckId === id)};
                 resolve(foundDeck);
 
             }, 1000);
@@ -69,19 +41,7 @@ export class DeckRepository implements CrudRepository<Deck>{
 
         return new Promise<Deck>((resolve, reject) => {
 
-            if(!isValidObject(newDeck, 'deckId')){
-                reject(new InvalidInputError('Valid Object was not input'));
-                return;
-            }
-
             setTimeout(() =>{
-
-                let conflict = deckData.filter(deck => deck.authorId === newDeck.authorId && deck.deckname === newDeck.deckname);
-
-                if(conflict.length !== 0){
-                    reject(new ResourceConflictError('One author cannot make two decks with the same name'));
-                    return;
-                }
 
                 newDeck.deckId = (deckData.length) + 1;
                 deckData.push(newDeck);
@@ -96,11 +56,6 @@ export class DeckRepository implements CrudRepository<Deck>{
     update(updatedDeck: Deck): Promise<Deck>{
 
         return new Promise<Deck>((resolve,reject) => {
-
-            if(!isValidId(updatedDeck.deckId) || !isValidObject(updatedDeck, 'id')){
-                reject(new InvalidInputError('Valid deck object was not input'));
-                return;
-            }
 
             setTimeout(() => {
 
@@ -134,21 +89,10 @@ export class DeckRepository implements CrudRepository<Deck>{
 
         return new Promise<Deck>((resolve, reject) => {
 
-            if (!isValidString(input)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
-
             setTimeout(() => {
 
-                for(let deck of deckData){
-                    if (deck.deckname === input){
-                        resolve(deck);
-                        return;
-                    }
-                }
-
-                reject(new ResourceNotFoundError('Deck with that name does not exist'));
+                let card = {...deckData.find(deck => deck.deckname === input)};
+                resolve(card);
 
             },1000);
 
@@ -158,29 +102,12 @@ export class DeckRepository implements CrudRepository<Deck>{
 
     getByAuthorId(id: number): Promise<Deck[]>{
         
-        return new Promise<Deck[]>((resolve, reject) => {
-
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        return new Promise<Deck[]>((resolve, reject) => {            
 
             setTimeout(() => {
-
-                let authorArray: Deck[] = [];
-
-                for(let deck of deckData){
-                    if(deck.authorId === id){
-                        authorArray.push(deck);
-                    }
-                }
-
-                if(authorArray.length === 0){
-                    reject(new ResourceNotFoundError('Author has not made any decks'));
-                    return;
-                }
-
-                resolve(authorArray);
+                
+                let decks = deckData.filter(deck => deck.authorId === id);
+                resolve(decks);
 
             }, 1000);
 

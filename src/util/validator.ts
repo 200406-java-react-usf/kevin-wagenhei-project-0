@@ -34,10 +34,47 @@ export const isValidObject = (obj: Object, ...nullableVal: string[]) => {
 
 };
 
+export const isEmptyObject = (obj: any) => {
+
+    if(!obj || Object.keys(obj).length === 0){
+        return false;
+    }
+
+    return true;
+
+};
+
+export const isPropertyOf = (prop: string, type: any) => {
+
+    if(!prop || !type){
+
+        return false;
+
+    }
+
+    let typeCreator = <T>(Type: (new () => T)): T => {
+
+        return new Type();
+
+    }
+
+    let tempInstance;
+    try{
+        tempInstance = typeCreator(type);
+    } catch {
+        return false;
+    }
+
+    return Object.keys(tempInstance).includes(prop);
+
+};
+
 export default {
     isValidId,
     isValidObject,
-    isValidString
+    isValidString,
+    isEmptyObject,
+    isPropertyOf
 };
 
 
