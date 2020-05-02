@@ -13,7 +13,6 @@ import {
     ResourceConflictError,
     InvalidInputError
 } from '../errors/errors';
-import userData from '../data/user-db';
 
 export class UserService{
 
