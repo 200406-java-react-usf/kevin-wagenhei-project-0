@@ -21,20 +21,15 @@ export class UserService{
         this.userRepo = userRepo;
     }
 
-    getAllUsers(): Promise<User[]>{
+    async getAllUsers(): Promise<User[]>{
 
-        return new Promise<User[]>(async (resolve,reject) => {
+        let result = await this.userRepo.getAll();
 
-            let result = await this.userRepo.getAll();
+        if(result.length === 0){
+            throw new ResourceNotFoundError('No users in database');
+        }
 
-            if(result.length === 0){
-                reject(new ResourceNotFoundError('No users in database'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;
 
     }
 

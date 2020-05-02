@@ -1,22 +1,26 @@
 import {CrudRepository} from './crud-repo';
 import {User} from '../models/users';
 import userData from '../data/user-db';
-import {ResourceNotFoundError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import { PoolClient } from 'pg';
+import { connectionPool } from '..';
 
 export class UserRepository implements CrudRepository<User> {
 
-    getAll(): Promise<User[]>{
+    async getAll(): Promise<User[]>{
 
-        return new Promise<User[]>((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                let users: User[] = userData;
-                resolve(users);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from app_users';
+            let rs = await client.query(sql);
+            return rs.rows;
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
