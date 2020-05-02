@@ -4,6 +4,7 @@ import {ResourceNotFoundError, ResourceConflictError, InvalidInputError} from '.
 import Validator from '../util/validator';
 import cardData from '../data/card-db';
 
+/*
 describe('Tests for the Card Repository', () => {
 
     beforeEach(() => {
@@ -557,3 +558,4 @@ describe('Tests for the Card Repository', () => {
 
 });
 
+*/
