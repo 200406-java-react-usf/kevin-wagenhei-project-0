@@ -4,6 +4,7 @@ import userData from '../data/user-db';
 import {ResourceNotFoundError, ResourceConflictError, InternalServerError} from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
+import {mapUserResultSet} from '../util/result-set-mapper';
 
 export class UserRepository implements CrudRepository<User> {
 
@@ -15,7 +16,7 @@ export class UserRepository implements CrudRepository<User> {
             client = await connectionPool.connect();
             let sql = 'select * from app_users';
             let rs = await client.query(sql);
-            return rs.rows;
+            return rs.rows.map(mapUserResultSet);
         } catch(e){
             throw new InternalServerError();
         } finally{
@@ -32,7 +33,7 @@ export class UserRepository implements CrudRepository<User> {
             client = await connectionPool.connect();
             let sql = 'select * from app_users where id = $1';
             let rs = await client.query(sql, [id]);
-            return rs.rows[0];
+            return mapUserResultSet(rs.rows[0]);
         } catch (e){
             throw new InternalServerError();
         } finally{
