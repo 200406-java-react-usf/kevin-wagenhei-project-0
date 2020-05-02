@@ -105,7 +105,7 @@ class InternalServerError {
         this.statusCode = 500;
 
         if(!reason){
-            this.message = 'Invalid Credentials';
+            this.message = 'Internal Server Error';
         }else{
             this.message = reason;
         }
