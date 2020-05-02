@@ -49,77 +49,92 @@ export class UserService{
 
     }
 
-    getUserByUniqueKey(queryObj: any): Promise<User>{
+    async getUserByUniqueKey(queryObj: any): Promise<User>{
 
-        return new Promise<User> (async (resolve, reject) => {
+        try {
+            
+            let queryKeys = Object.keys(queryObj);
 
-            try {
+            if(!queryKeys.every(key => isPropertyOf(key, User))){
+                throw new InvalidInputError();
+            }
+            
+            let key = queryKeys[0];
+            let val = queryObj[key];
 
-                let queryKeys = Object.keys(queryObj);
-
-                if(!queryKeys.every(key => isPropertyOf(key, User))){
-                    return reject(new InvalidInputError());
-                }
-
-                let key = queryKeys[0];
-                let val = queryKeys[key];
-
-                if(key === 'id'){
-                    return resolve(await this.getUserById(+key));
-                }
-
-                if(!isValidString(val)){
-                    return reject(new InvalidInputError());
-                }
-
-                let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
-
-                if(!isEmptyObject(user)){
-                    return reject(new ResourceNotFoundError());
-                }
-
-                resolve(user);
-
-            } catch (e) {
-
-                reject(e);
-
+            if(key === 'id'){
+                return await this.getUserById(+key);
+            }
+            
+            if(!isValidString(val)){
+                throw new InvalidInputError();
+            }
+            
+            let user = await this.userRepo.getUserByUniqueKey(key, val);
+            
+            if(!isEmptyObject(user)){
+                throw new ResourceNotFoundError();
             }
 
-        });
+            return user;
+
+        } catch (e) {
+
+            throw e;
+
+        }
 
     }
 
-    addNewUser(newUser: User): Promise<User>{
+    async addNewUser(newUser: User): Promise<User>{
 
-        return new Promise<User> (async (resolve,reject) => {
-
+        try{
+            
             if(!isValidObject(newUser, 'id')){
-                reject(new InvalidInputError('Valid Object was not input'));
-                return;
+                throw new InvalidInputError('Valid Object was not input');
+            }
+            
+            let usernameConflict = await this.isUsernameAvailable(newUser.username);
+
+            if(!usernameConflict){
+                throw new ResourceConflictError('Username already exists');
             }
 
-            //GET BY UNIQUE KEY
-            let usernameConflict = userData.filter(user => user.username == newUser.username);
-            let emailConflict = userData.filter(user => user.email === newUser.email);
+            let emailConflict = await this.isEmailAvailable(newUser.email);
 
-            if(usernameConflict.length !== 0){
-                reject(new ResourceConflictError('Username already exists'));
-                return;
+            if(!emailConflict){
+                throw new ResourceConflictError('Email already in use');
             }
+            const persistedUser = await this.userRepo.save(newUser);
+            return persistedUser;
 
-            if(emailConflict.length !== 0){
-                return reject(new ResourceConflictError('Email already in use'));
-            }
+        } catch (e){
+            throw e;
+        }    
+    
+    }
 
-            try{
-                const persistedUser = await this.userRepo.save(newUser);
-                resolve(persistedUser);
-            } catch(e){
-                reject(e);
-            }
+    private async isUsernameAvailable(username: string): Promise<boolean>{
 
-        });
+        try{
+            await this.getUserByUniqueKey({'username': username});
+        } catch(e){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    private async isEmailAvailable(email: string): Promise<boolean>{
+
+        try{
+            await this.getUserByUniqueKey({'email': email})
+        } catch(e){
+            return true;
+        }
+
+        return false;
 
     }
 

@@ -42,34 +42,51 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
-    getUserByUniqueKey(key: string, val: string): Promise<User> {
+     async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
-        return new Promise<User>((resolve) => {
+        let client: PoolClient;            
 
-            setTimeout(() => {
-
-                const user = {...userData.find(user => user[key] === val)};
-                resolve(user);
-
-            }, 1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = `select * from app_users where ${key} = $1`
+            let rs = await client.query(sql, [val]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    save(newUser: User): Promise<User>{
+    async save(newUser: User): Promise<User>{
 
-        return new Promise<User> ((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try{
+            client = await connectionPool.connect();
 
-                newUser.id = (userData.length) + 1;
-                userData.push(newUser);
-                resolve(newUser);
+            let sql = `
+                insert into app_users (username, password, email, first_name, last_name)
+                values
+                    ($1, $2, $3, $4, $5);
+            `;
 
-            },1000);
+            await client.query(sql, [newUser.username, newUser.password, newUser.email, newUser.firstName, newUser.lastName]);
 
-        });
+            let sqlId = `select * from app_users where username = $1`
+
+            let rs = await client.query(sqlId, [newUser.username]);
+
+            newUser.id = rs.rows[0].id
+
+            return newUser;
+
+        }catch (e){
+                throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
