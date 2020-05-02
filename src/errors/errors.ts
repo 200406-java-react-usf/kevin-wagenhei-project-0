@@ -95,10 +95,30 @@ class AuthenticationError {
 
 }
 
+class InternalServerError {
+
+    message: string;
+    statusCode: number;
+
+    constructor(reason?: string){
+
+        this.statusCode = 500;
+
+        if(!reason){
+            this.message = 'Invalid Credentials';
+        }else{
+            this.message = reason;
+        }
+        
+    }
+
+}
+
 export {
     ResourceNotFoundError,
     AuthenticationError,
     ResourceConflictError,
     InvalidInputError,
-    AuthorizationError
+    AuthorizationError,
+    InternalServerError
 };
