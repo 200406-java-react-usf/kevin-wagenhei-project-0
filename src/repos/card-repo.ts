@@ -1,22 +1,25 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
-import {ResourceNotFoundError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import { PoolClient } from 'pg';
+import { connectionPool } from '..';
+import {mapCardResultSet} from '../util/result-set-mapper';
 
 export class CardRepository implements CrudRepository<Card>{
 
-    getAll(): Promise<Card[]>{
+    async getAll(): Promise<Card[]>{
 
-        return new Promise((resolve) =>{
+        let client: PoolClient;
 
-            setTimeout(()=> {
-
-                let card: Card[] = cardData;
-                resolve(card);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from cards';
+            let rs = await connectionPool.query(sql);
+            return rs.rows.map(mapCardResultSet);
+        }catch(e){
+            throw new InternalServerError;
+        }
 
     }
 
