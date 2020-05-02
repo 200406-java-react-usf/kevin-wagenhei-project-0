@@ -1,15 +1,22 @@
-import {CardRepository} from './repos/card-repo';
-import { Card } from './models/cards';
-import {UserRepository} from './repos/user-repo';
-import {User} from './models/users';
-import {DeckRepository} from './repos/deck-repo';
-import {Deck} from './models/decks';
-import {CardService} from './services/card-services';
-import AppConfig from './config/app';
+import express from 'express';
+import dotenv from 'dotenv';
 import {CardRouter} from './routers/card-router';
 import {DeckRouter} from './routers/deck-router';
 import { UserRouter } from './routers/user-router';
-import express from 'express';
+import { Pool } from 'pg';
+
+dotenv.config();
+
+export const connectionPool: Pool = new Pool({
+
+    host: process.env['DB_HOST'],
+    port: +process.env['DB_PORT'],
+    database: process.env['DB_NAME'],
+    user: process.env['DB_USERNAME'],
+    password: process.env['DB_PASSWORD'],
+    max: 5
+
+});
 
 const app = express();
 
