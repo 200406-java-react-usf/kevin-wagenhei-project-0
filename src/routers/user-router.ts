@@ -1,6 +1,5 @@
 import express from 'express';
 import AppConfig from '../config/app';
-import e from 'express';
 
 export const UserRouter = express.Router();
 
@@ -19,7 +18,7 @@ UserRouter.get('', async(req, resp) => {
 
 });
 
-UserRouter.get('/:id', async(req, resp) => {
+UserRouter.get('/id/:id', async(req, resp) => {
 
     let id = +req.params.id;
 
@@ -40,6 +39,21 @@ UserRouter.post('', async(req, resp) => {
         let payload = await userService.addNewUser(req.body);
         resp.status(201).json(payload);
     } catch (e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});
+
+UserRouter.get('/username/:username', async(req,resp) => {
+
+    let username = req.params.username;
+
+    try{
+        let payload = await userService.getUserByUsername(username);
+        resp.status(200).json(payload);
+    } catch(e){
         resp.status(e.statusCode).json(e);
     }
 

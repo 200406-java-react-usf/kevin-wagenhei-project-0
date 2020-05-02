@@ -93,7 +93,7 @@ export class UserService{
             if(!isValidObject(newUser, 'id')){
                 throw new InvalidInputError('Valid Object was not input');
             }
-            
+
             let usernameConflict = await this.isUsernameAvailable(newUser.username);
 
             if(!usernameConflict){
@@ -157,25 +157,19 @@ export class UserService{
 
     }
 
-    getUserByUsername(un: string): Promise<User> {
+    async getUserByUsername(un: string): Promise<User> {
 
-        return new Promise<User>(async (resolve,reject) => {
+        if(!isValidString(un)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if(!isValidString(un)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let result = await this.userRepo.getByUsername(un);
 
-            let result = await this.userRepo.getByUsername(un);
+        if(!isEmptyObject(result)){
+            throw new ResourceNotFoundError('No user found with that username');
+        }
 
-            if(!isEmptyObject(result)){
-                reject(new ResourceNotFoundError('No user found with that username'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;
 
     }
 
