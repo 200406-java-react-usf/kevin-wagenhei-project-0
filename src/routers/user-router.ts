@@ -17,3 +17,18 @@ UserRouter.get('', async(req, resp) => {
     resp.send();
 
 });
+
+UserRouter.get('/:id', async(req, resp) => {
+
+    let id = +req.params.id;
+
+    try{
+        let payload = await userService.getUserById(id);
+        resp.status(200).json(payload);
+    } catch (e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});

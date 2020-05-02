@@ -33,25 +33,19 @@ export class UserService{
 
     }
 
-    getUserById(id: number): Promise<User> {
+    async getUserById(id: number): Promise<User> {
 
-        return new Promise<User>(async (resolve,reject) => {
+        if(!isValidId(id)){
+            throw new InvalidInputError('Valid ID was not input');
+        }
 
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        let result = await this.userRepo.getById(id);
 
-            let result = {...await this.userRepo.getById(id)};
+        if(!isEmptyObject(result)){
+            throw new ResourceNotFoundError('No user with that ID found');
+        }
 
-            if(!isEmptyObject(result)){
-                reject(new ResourceNotFoundError('No user with that ID found'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;        
 
     }
 
