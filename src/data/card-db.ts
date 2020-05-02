@@ -6,9 +6,9 @@ let id: number = 1;
 
 export default [
 
-    new Card(id++, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
-    new Card(id++, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49),
-    new Card(id++, 'Blizzard', 'Rare', 11.2, 1.3, 54, 83000, 44.9),
+    /* new Card(id++, 'Escrivate', 'Common', 57.1, 54),
+    new Card(id++, 'Ice Barriar', 'Common',54, 49),
+    new Card(id++, 'Blizzard', 'Rare', 11.2, 1.3,44.9),
     new Card(id++, 'Wrath', 'Common', 6.7, 1.9, 53.7, 77000, 46.9),
     new Card(id++, 'Shadowstep', 'Common', 8.8, 1.5, 55.5, 74000, 52.4),
     new Card(id++, 'Twilight Drake', 'Rare', 8.9, 1.1, 54.1, 69000, 53.6),
@@ -36,5 +36,5 @@ export default [
     new Card(id++, 'Shadow Word: Ruin', 'Epic', 4.6, 1.1, 53.4, 23000, 50.4),
     new Card(id++, 'Murloc Warleader', 'Epic', 2.9, 2, 58.2, 23000, 56.1),
     new Card(id++, 'Dread Corsair', 'Common', 1.9, 1.9, 52.5, 22000, 46.8)
-
+ */
 ];
