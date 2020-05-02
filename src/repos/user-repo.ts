@@ -24,18 +24,20 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
-    getById(id: number): Promise<User>{
+    async getById(id: number): Promise<User>{
 
-        return new Promise<User>((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                const user: User = {...userData.find(user => user.id === id)};
-                resolve(user);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from app_users where id = $1';
+            let rs = await client.query(sql, [id]);
+            return rs.rows[0];
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
