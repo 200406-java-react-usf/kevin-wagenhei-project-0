@@ -44,7 +44,10 @@ export class UserRepository implements CrudRepository<User> {
 
      async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
-        let client: PoolClient;            
+        let client: PoolClient;        
+        
+        if (key === 'firstName') {key = 'first_name'};
+        if (key === 'lastName') {key = 'last_name'};
 
         try{
             client = await connectionPool.connect();
