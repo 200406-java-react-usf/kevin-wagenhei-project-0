@@ -153,22 +153,58 @@ export class CardService {
 
     }
 
-    updateCard(updatedCard: Card): Promise<Card>{
+    async updateCard(updatedCard: Card): Promise<Card>{
 
-        return new Promise<Card>(async (resolve,reject) => {
+        try{
 
             if (!isValidId(updatedCard.id) || !isValidObject(updatedCard, 'id')){
-                reject(new InvalidInputError('Valid Card object/ID was not input'));
-                return;
+                throw new InvalidInputError('Valid Card object/ID was not input');
             }
 
-            try{
-                resolve(await this.cardRepo.update(updatedCard));
-            } catch(e) {
-                reject(e);
+            let cardToUpdate = await this.getCardById(updatedCard.id);
+
+            if(!cardToUpdate){
+                throw new ResourceNotFoundError('No card found to update');
             }
 
-        });
+            if(updatedCard.name !== cardToUpdate.name){
+                throw new ResourceConflictError('Cannot update card name');
+            }
+
+            if(updatedCard.rarity !== cardToUpdate.rarity){
+                throw new ResourceConflictError('Cannot update card rarity');
+            }
+
+            let persistedCard = await this.cardRepo.update(updatedCard);
+
+            return persistedCard;
+
+        } catch(e){
+            throw e;
+        }
+
+    }
+
+    async deleteCard(id: number): Promise<boolean>{
+
+        let keys = Object.keys(id);
+        let val = keys[0];
+
+        let cardID = +id[val];
+
+        if(!isValidId(cardID)){
+            throw new InvalidInputError('Invalid ID was input');
+        }
+
+        let cardToDelete = await this.getCardById(cardID)
+
+        if(!cardToDelete){
+            throw new ResourceNotFoundError('Card does not exist, or was already deleted');
+        }
+
+        let persistedCard = await this.cardRepo.deleteById(cardID);
+
+        return persistedCard;
 
     }
 

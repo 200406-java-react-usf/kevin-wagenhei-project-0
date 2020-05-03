@@ -86,40 +86,47 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
-    update(updatedCard: Card): Promise<Card>{
+    async update(updatedCard: Card): Promise<Card>{
 
-        return new Promise<Card>((resolve, reject) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try{
+            client = await connectionPool.connect();
 
-                let cardToBeUpdated = cardData.find(card => card.id === updatedCard.id);
+            let sql = `
+                update cards
+                    set
+                        deck_winrate = $2,
+                        played_winrate = $3
+                    where id = $1    
+            `;
 
-                if(!cardToBeUpdated){
-                    reject(new ResourceNotFoundError('Card you want to update does not exist'));
-                    return;
-                }
+            await client.query(sql, [updatedCard.id,updatedCard.deckWinrate, updatedCard.playedWinrate]);
 
-                if(cardToBeUpdated.name !== updatedCard.name || cardToBeUpdated.rarity !== updatedCard.rarity){
-                    reject(new ResourceConflictError('Cannot update card name or rarity'));
-                    return;
-                }
+            return updatedCard;
 
-                cardToBeUpdated = updatedCard;
-                resolve(cardToBeUpdated);
-
-            },1000);
-
-        });
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    deleteById(id: number): Promise<boolean>{
+    async deleteById(id: number): Promise<boolean>{
 
-        return new Promise<boolean>((resolve,reject) => {
+        let client: PoolClient;
 
-
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = `delete from cards where id = $1`;
+            await client.query(sql, [id]);
+            return true;
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
