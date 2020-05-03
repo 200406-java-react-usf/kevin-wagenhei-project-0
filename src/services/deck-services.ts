@@ -50,30 +50,41 @@ export class DeckService {
 
     }
 
-    addNewDeck(newDeck: Deck): Promise<Deck> {
+    async addNewDeck(newDeck: Deck): Promise<Deck> {
 
-        return new Promise<Deck>(async (resolve,reject) => {
+        try{
 
             if(!isValidObject(newDeck, 'deckId')){
-                reject(new InvalidInputError('Valid Object was not input'));
-                return;
+                throw new InvalidInputError('Valid Object was not input');
             }
 
-            let conflict = deckData.filter(deck => deck.authorId === newDeck.authorId && deck.deckname === newDeck.deckname);
+            let conflict = await this.checkForDuplicateNames(newDeck.authorId, newDeck.deckname);
 
-            if(conflict.length !== 0){
-                reject(new ResourceConflictError('One author cannot make two decks with the same name'));
-                return;
+            if(!conflict){
+                throw new ResourceConflictError('One author cannot make two decks with the same name');
             }
 
-            try{
-                const persistedDeck = await this.deckRepo.save(newDeck);
-                resolve(persistedDeck);
-            } catch (e){
-                reject(e);
-            }
+            const persistedDeck = await this.deckRepo.save(newDeck);
 
-        });
+            return persistedDeck;
+
+        } catch(e){
+            
+            throw e;
+
+        }    
+
+    }
+
+    private async checkForDuplicateNames(authorId: number, name: string): Promise<boolean>{
+
+        try{
+            await this.deckRepo.getByAuthorIdAndName(authorId, name);
+        }catch (e){
+            return true;
+        }
+
+        return false;
 
     }
 
