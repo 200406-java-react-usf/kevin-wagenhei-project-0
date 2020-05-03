@@ -47,45 +47,35 @@ export class CardService {
 
     }
 
-    getCardByRarity(rarity: string): Promise<Card[]>{
+    async getCardByRarity(rarity: string): Promise<Card[]>{
 
-        return new Promise<Card[]>(async (resolve,reject) => {
+        if(!isValidString(rarity)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if(!isValidString(rarity)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let cards = await this.cardRepo.getByRarity(rarity);
 
-            let cards = [...await this.cardRepo.getByRarity(rarity)];
+        if(cards.length === 0){
+            throw new ResourceNotFoundError('Rarity does not Exist');
+        }
 
-            if(cards.length === 0){
-                return reject(new ResourceNotFoundError('Rarity does not Exist'));
-            }
-
-            resolve(cards);
-
-        });
+        return cards;
 
     }
     
-    getCardByName(name: string): Promise<Card>{
+    async getCardByName(name: string): Promise<Card>{
 
-        return new Promise<Card>(async (resolve,reject) => {
+        if(!isValidString(name)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if(!isValidString(name)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let card = await this.cardRepo.getByName(name);
 
-            let card = await this.cardRepo.getByName(name);
+        if(!isEmptyObject(card)){
+            throw new ResourceNotFoundError('Card with that name does not exist');
+        }
 
-            if(!isEmptyObject(card)){
-                return reject(new ResourceNotFoundError('Card with that name does not exist'));
-            }
-
-            resolve(card);
-
-        });
+        return card;
 
     }
 

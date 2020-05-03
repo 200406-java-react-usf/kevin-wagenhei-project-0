@@ -123,33 +123,37 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
-    getByRarity(inputRarity: string): Promise<Card[]>{
+    async getByRarity(inputRarity: string): Promise<Card[]>{
 
-        return new Promise((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                let rarityArray = cardData.filter(card => card.rarity === inputRarity);
-                resolve(rarityArray);
-
-            }, 1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from cards where rarity = $1';
+            let rs = await client.query(sql, [inputRarity]);
+            return rs.rows.map(mapCardResultSet);
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    getByName(inputName: string): Promise<Card>{
+    async getByName(inputName: string): Promise<Card>{
 
-        return new Promise<Card>((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                let card = {...cardData.find(card => card.name === inputName)};
-                resolve(card);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from cards where card_name = $1';
+            let rs = await client.query(sql, [inputName]);
+            return mapCardResultSet(rs.rows[0]);
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
