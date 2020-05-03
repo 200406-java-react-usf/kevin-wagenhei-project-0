@@ -3,7 +3,7 @@ import {Card} from '../models/cards';
 
 let id: number = 1;
 
-let deckOneArray: Card[] = [
+let deckOneArray: number[] = [
 
    /*  new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
     new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
@@ -38,7 +38,7 @@ let deckOneArray: Card[] = [
 
 ];
 
-let deckTwoArray: Card[] = [
+let deckTwoArray: number[] = [
 
    /*  new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
     new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
@@ -73,7 +73,7 @@ let deckTwoArray: Card[] = [
  */
 ];
 
-let deckThreeArray: Card[] = [
+let deckThreeArray: number[] = [
 
    /*  new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
     new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
