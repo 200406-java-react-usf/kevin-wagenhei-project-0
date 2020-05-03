@@ -12,7 +12,6 @@ import {
     ResourceConflictError,
     InvalidInputError
 } from '../errors/errors';
-import cardData from '../data/card-db';
 
 export class CardService {
 
@@ -32,24 +31,19 @@ export class CardService {
 
     }
 
-    getCardById(id: number): Promise<Card> {
+    async getCardById(id: number): Promise<Card> {        
 
-        return new Promise<Card>(async (resolve,reject) => {
+        if(!isValidId(id)){
+            throw new InvalidInputError('Invalid ID was input');
+        }
 
-            if(!isValidId(id)){
-                return reject(new InvalidInputError('Invalid ID was input'));
-            }
+        let card = await this.cardRepo.getById(id);
 
-            let card = {... await this.cardRepo.getById(id)};
+        if (!isEmptyObject(card)){
+            throw new ResourceNotFoundError('Card with that ID does not exist');
+        }
 
-            if (!isEmptyObject(card)){
-                reject(new ResourceNotFoundError('Card with that ID does not exist'));
-                return;
-            }
-
-            resolve(card);
-
-        });
+        return card;
 
     }
 
@@ -95,74 +89,77 @@ export class CardService {
 
     }
 
-    addNewCard(newCard: Card): Promise<Card>{
+    async addNewCard(newCard: Card): Promise<Card>{
 
-        return new Promise<Card>(async(resolve,reject) => {
-
+        try{
+            
             if(!isValidObject(newCard, 'id')){
-                return reject(new InvalidInputError('Valid card object was not input'));
+                throw new InvalidInputError('Valid card object was not input');
             }
+            
+            let nameConflict = await this.isCardAlreadyAdded(newCard.name);
 
-            //GET BY UNIQUE KEY
-            let nameConflict = cardData.filter(card => card.name == newCard.name);
-
-            if(nameConflict.length !== 0){
-                reject(new ResourceConflictError('Card Already Exists In Database'));
-                return;
-
+            if(!nameConflict){
+                throw new ResourceConflictError('Card Already Exists In Database');
             }
+            
+            const persistedCard = await this.cardRepo.save(newCard);
+            return persistedCard;
+        
+        } catch (e){
 
-            // why does this need to be a try catch block if there is no reject on save()?
+            throw e;
 
-            try{
-                const persistedCard = await this.cardRepo.save(newCard);
-                resolve(persistedCard);
-            } catch (e){
-                reject(e);
-            }
+        }    
+            
+    }
 
-        });
+    private async isCardAlreadyAdded(name:string): Promise<boolean>{
+
+        try{
+            await this.getCardByUniqueKey({'name': name});
+        } catch (e){
+            return true;
+        }
+
+        return false;
 
     }
 
-    getCardByUniqueKey(queryObj: any): Promise<Card>{
+    async getCardByUniqueKey(queryObj: any): Promise<Card>{
 
-        return new Promise<Card> (async (resolve, reject) => {
+        try {
 
-            try {
+            let queryKeys = Object.keys(queryObj);
 
-                let queryKeys = Object.keys(queryObj);
-
-                if(!queryKeys.every(key => isPropertyOf(key, Card))){
-                    return reject(new InvalidInputError());
-                }
-
-                let key = queryKeys[0];
-                let val = queryKeys[key];
-
-                if(key === 'id'){
-                    return resolve(await this.getCardById(+key));
-                }
-
-                if(!isValidString(val)){
-                    return reject(new InvalidInputError());
-                }
-
-                let card = {...await this.cardRepo.getCardByUniqueKey(key, val)};
-
-                if(!isEmptyObject(card)){
-                    return reject(new ResourceNotFoundError());
-                }
-
-                resolve(card);
-
-            } catch (e) {
-
-                reject(e);
-
+            if(!queryKeys.every(key => isPropertyOf(key, Card))){
+                throw new InvalidInputError();
             }
 
-        });
+            let key = queryKeys[0];
+            let val = queryObj[key];
+
+            if(key === 'id'){
+                throw await this.getCardById(+key);
+            }
+
+            if(!isValidString(val)){
+                throw new InvalidInputError();
+            }
+
+            let card = await this.cardRepo.getCardByUniqueKey(key, val);
+
+            if(!isEmptyObject(card)){
+                throw new ResourceNotFoundError();
+            }
+
+            return card;
+
+        } catch (e) {
+
+            throw e;
+
+        }
 
     }
 
