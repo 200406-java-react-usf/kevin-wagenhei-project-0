@@ -153,11 +153,19 @@ export class UserService{
 
             let emailConflict = await this.isEmailAvailable(updateUser.email);
 
+            if(userToUpdate.email === updateUser.email){
+                emailConflict = true;
+            }
+
             if(!emailConflict){
                 throw new ResourceConflictError('Email already taken');
             }
 
             let usernameConflict = await this.isUsernameAvailable(updateUser.username);
+
+            if(userToUpdate.username === updateUser.username){
+                usernameConflict = true;
+            }
 
             if(!usernameConflict){
                 throw new ResourceConflictError('Username is already taken');
@@ -210,8 +218,6 @@ export class UserService{
         let val = keys[0]
 
         let userID = +id[val];
-
-        console.log(userID);
 
         if(!isValidId(userID)){
             throw new InvalidInputError('Invalid ID was input');
