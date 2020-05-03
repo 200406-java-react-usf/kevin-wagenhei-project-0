@@ -22,41 +22,31 @@ export class DeckService {
         this.deckRepo = deckRepo;
     }
 
-    getAllDecks(): Promise<Deck[]> {
-
-        return new Promise<Deck[]>(async (resolve,reject) => {
+    async getAllDecks(): Promise<Deck[]> {
             
-            let result = await this.deckRepo.getAll();
+        let result = await this.deckRepo.getAll();
 
-            if (result.length === 0){
-                reject(new ResourceNotFoundError('No decks in the database'));
-                return;
-            }
+        if (result.length === 0){
+            throw new ResourceNotFoundError('No decks in the database');
+        }
 
-            resolve(result);
-
-        });
+        return result;
+    
     }
 
-    getDeckById(id: number): Promise<Deck> {
+    async getDeckById(id: number): Promise<Deck[]> {
 
-        return new Promise<Deck>(async (resolve,reject) => {
+        if(!isValidId(id)){
+            throw new InvalidInputError('Valid ID was not input');
+        }
 
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        let deck = await this.deckRepo.getById(id);
 
-            let deck = {...await this.deckRepo.getById(id)};
+        if (!isEmptyObject(deck)){
+            throw new ResourceNotFoundError('No deck found with that ID');
+        }
 
-            if (!isEmptyObject(deck)){
-                reject(new ResourceNotFoundError('No deck found with that ID'));
-                return;
-            }
-
-            resolve(deck);
-
-        });
+        return deck;
 
     }
 

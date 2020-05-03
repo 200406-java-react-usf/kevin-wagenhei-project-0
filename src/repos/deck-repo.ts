@@ -1,39 +1,55 @@
 import {CrudRepository} from './crud-repo';
 import {Deck} from '../models/decks';
 import deckData from '../data/deck-db';
-import {isValidString, isValidObject, isValidId} from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, InvalidInputError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import {PoolClient} from 'pg';
+import {connectionPool} from '..';
 
-export class DeckRepository implements CrudRepository<Deck>{
 
-    getAll(): Promise<Deck[]>{
+export class DeckRepository{
 
-        return new Promise<Deck[]>((resolve,reject) => {
+    baseSql = `
+        select
+            de.id,
+            de.author_id,
+            de.deck_name,
+            ca.card_name
+        from decks de
+        join deck_card dc
+        on de.id = dc.deck_id
+        join cards ca
+        on ca.id = dc.card_id
+    `;
 
-            setTimeout(() => {
+    async getAll(): Promise<Deck[]>{
 
-                let decks: Deck[] = deckData;
-
-                resolve(decks);
-
-            }, 1000);
-
-        });
+        let client: PoolClient;
+        
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseSql}`;
+            let rs = await client.query(sql);
+            return rs.rows;
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    getById(id: number): Promise<Deck>{
+    async getById(id: number): Promise<Deck[]>{
 
-        return new Promise<Deck>((resolve, reject) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                let foundDeck: Deck = {...deckData.find(deck => deck.deckId === id)};
-                resolve(foundDeck);
-
-            }, 1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseSql} where de.id = $1`;
+            let rs = await client.query(sql, [id]);
+            return rs.rows;
+        } catch(e){
+            
+        }
 
     }
 
