@@ -137,22 +137,38 @@ export class UserService{
 
     }
 
-    updateUser(updateUser: User): Promise<User>{
+    async updateUser(updateUser: User): Promise<User>{
 
-        return new Promise<User>(async (resolve,reject) => {
+        try{
 
             if (!isValidObject(updateUser, 'id') || !isValidId(updateUser.id)){
-                reject(new InvalidInputError('Valid user was not input'));
-                return;
+                throw new InvalidInputError('Valid user was not input');
             }
 
-            try {
-                resolve(await this.userRepo.update(updateUser));
-            } catch (e){
-                reject(e);
+            let userToUpdate = await this.getUserById(updateUser.id);
+
+            if(!userToUpdate){
+                throw new ResourceNotFoundError('No user found to update');
             }
 
-        });
+            let emailConflict = await this.isEmailAvailable(updateUser.email);
+
+            if(!emailConflict){
+                throw new ResourceConflictError('Email already taken');
+            }
+
+            let usernameConflict = await this.isUsernameAvailable(updateUser.username);
+
+            if(!usernameConflict){
+                throw new ResourceConflictError('Username is already taken');
+            }
+
+            let persistedUser = await this.userRepo.update(updateUser);
+            return persistedUser;
+
+        } catch (e){
+            throw e;
+        }
 
     }
 
@@ -185,6 +201,31 @@ export class UserService{
         }
 
         return result;
+
+    }
+
+    async deleteUser(id:number): Promise<boolean>{
+        
+        let keys = Object.keys(id);
+        let val = keys[0]
+
+        let userID = +id[val];
+
+        console.log(userID);
+
+        if(!isValidId(userID)){
+            throw new InvalidInputError('Invalid ID was input');
+        }
+
+        let userToDelete = await this.getUserById(userID);
+
+        if(!userToDelete){
+            throw new ResourceNotFoundError('User does not exist, or was already deleted');
+        }
+
+        let persistedUser = await this.userRepo.deleteById(userID);
+        
+        return persistedUser;
 
     }
 

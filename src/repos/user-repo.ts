@@ -1,7 +1,7 @@
 import {CrudRepository} from './crud-repo';
 import {User} from '../models/users';
 import userData from '../data/user-db';
-import {ResourceNotFoundError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError, InternalServerError, InvalidInputError} from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import {mapUserResultSet} from '../util/result-set-mapper';
@@ -93,52 +93,47 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
-    update(updatedUser: User): Promise<User>{
+    async update(updatedUser: User): Promise<User>{
 
-        return new Promise<User>((resolve, reject) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try{
+            client = await connectionPool.connect();
+            let sql = `
+                update app_users 
+                    set 
+                        username = $2, 
+                        first_name = $3, 
+                        last_name = $4,
+                        email = $5,
+                        password = $6
+                    where id = $1      
+            `;
+            await client.query(sql, [updatedUser.id, updatedUser.username, updatedUser.firstName, updatedUser.lastName, updatedUser.email, updatedUser.password]);
+            return updatedUser;
 
-                let userToUpdate = userData.find(user => user.id === updatedUser.id);
-
-                if(!userToUpdate){
-                    reject(new ResourceNotFoundError('No user found to update'));
-                    return;
-                }
-
-                if(userToUpdate.username !== updatedUser.username){
-                    reject(new ResourceConflictError('Cannot update username'));
-                    return;
-                }
-
-                const conflict = userData.filter(user => {
-                    if(user.id === updatedUser.id){
-                        return false;
-                    }
-                    return user.email == updatedUser.email;
-                }).pop();
-                
-                if(conflict){
-                    reject(new ResourceConflictError('Email already exists in the database'));
-                    return;
-                }
-
-                userToUpdate = updatedUser;
-                resolve(updatedUser);
-
-            },1000);
-
-        });
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    deleteById(id: number): Promise<boolean>{
+    async deleteById(id: number): Promise<boolean>{
 
-        return new Promise<boolean>((resolve,reject) => {
+        let client: PoolClient;
 
-
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = `delete from app_users where id = $1;`
+            await client.query(sql, [id]);
+            return true;
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
