@@ -172,25 +172,19 @@ export class UserService{
 
     }
 
-    getUserByCredentials(un: string, pw: string): Promise<User> {
+    async getUserByCredentials(un: string, pw: string): Promise<User> {
 
-        return new Promise<User>(async (resolve,reject) => {
+        if(!isValidString(un, pw)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if(!isValidString(un, pw)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let result = await this.userRepo.getByCredentials(un, pw);
 
-            let result = await this.userRepo.getByCredentials(un, pw);
+        if(!isEmptyObject(result)){
+            throw new AuthenticationError('Invalid credentials');
+        }
 
-            if(!isEmptyObject(result)){
-                reject(new AuthenticationError('Invalid credentials'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;
 
     }
 

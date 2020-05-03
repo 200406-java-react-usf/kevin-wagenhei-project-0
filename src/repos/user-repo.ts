@@ -159,18 +159,20 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
-    getByCredentials(un: string, pw: string): Promise<User>{
+    async getByCredentials(un: string, pw: string): Promise<User>{
 
-        return new Promise<User>((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                let foundUser = {...userData.find(user => user.username === un && user.password === pw)};
-                resolve(foundUser);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from app_users where username = $1 and password = $2';
+            let rs = await client.query(sql, [un, pw]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
