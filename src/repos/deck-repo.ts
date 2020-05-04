@@ -89,25 +89,42 @@ export class DeckRepository{
 
     }
 
-    update(updatedDeck: Deck): Promise<Deck>{
+    async update(updatedDeck: Deck): Promise<Deck>{
 
-        return new Promise<Deck>((resolve,reject) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try{
 
-                let deckToUpdate = deckData.find(deck => deck.deckId === updatedDeck.deckId);
+            client = await connectionPool.connect();
+            let sqlOne = `
+                update decks
+                    set
+                        deck_name = $2
+                where id = $1;        
+            `;
+            await client.query(sqlOne, [updatedDeck.deckId, updatedDeck.deckname]);
 
-                if (!deckToUpdate){
-                    reject(new ResourceNotFoundError('Deck you are trying to update does not exist'));
-                    return;
-                }
+            let sqlTwo = `delete from deck_card where deck_id = $1;`;
 
-                deckToUpdate = updatedDeck;
-                resolve(deckToUpdate);
+            await client.query(sqlTwo, [updatedDeck.deckId]);
 
-            }, 1000);
+            let sqlThree = `
+                insert into deck_card (deck_id, card_id)
+                values
+                    ($1, $2);
+            `;
+            for (let i = 0; i < updatedDeck.deckArray.length; i++){
+                await client.query(sqlThree, [updatedDeck.deckId, updatedDeck.deckArray[i]]);
+            }
 
-        });
+            return updatedDeck;
+
+        } catch(e){
+            console.log(e);
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 

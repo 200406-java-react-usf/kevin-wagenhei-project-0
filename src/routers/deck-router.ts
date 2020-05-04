@@ -88,3 +88,16 @@ DeckRouter.delete('', async (req, resp) => {
     resp.send();
 
 });
+
+DeckRouter.put('', async (req, resp) => {
+
+    try{
+        let payload = await deckService.updateDeck(req.body);
+        resp.status(200).json(payload);
+    } catch(e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});

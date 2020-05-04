@@ -87,22 +87,38 @@ export class DeckService {
 
     }
 
-    updateDeck(updateDeck: Deck): Promise<Deck>{
+    async updateDeck(updateDeck: Deck): Promise<Deck>{
 
-        return new Promise<Deck> (async (resolve,reject) => {
+        try{
 
             if(!isValidId(updateDeck.deckId) || !isValidObject(updateDeck, 'id')){
-                reject(new InvalidInputError('Valid deck object was not input'));
-                return;
+                throw new InvalidInputError('Valid deck object was not input');
             }
 
-            try{
-                resolve(await this.deckRepo.update(updateDeck));
-            } catch(e){
-                reject(e);
+            let decktoUpdate = await this.getDeckById(updateDeck.deckId);
+
+            if(!decktoUpdate){
+                throw new ResourceNotFoundError('No deck found to update');
             }
 
-        });
+            let deckConflict = this.checkForDuplicateNames(updateDeck.authorId,updateDeck.deckname);
+
+            //NEED TO ADD MAPPING TO MAKE THIS WORK
+            // if(decktoUpdate.deckname === updateDeck.deckname){
+            //     deckConflict = true;
+            // }
+
+            if(!deckConflict){
+                throw new ResourceNotFoundError('One of your decks already has that name');
+            }
+
+            let persistedDeck = await this.deckRepo.update(updateDeck);
+
+            return persistedDeck;
+
+        } catch (e){
+            throw e;
+        }
 
     }
 
