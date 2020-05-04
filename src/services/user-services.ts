@@ -212,12 +212,12 @@ export class UserService{
 
     }
 
-    async deleteUser(id:number): Promise<boolean>{
-        
-        let keys = Object.keys(id);
+    async deleteUser(jsonObj: object): Promise<boolean>{
+
+        let keys = Object.keys(jsonObj);
         let val = keys[0]
 
-        let userID = +id[val];
+        let userID = +jsonObj[val];
 
         if(!isValidId(userID)){
             throw new InvalidInputError('Invalid ID was input');
