@@ -62,7 +62,7 @@ export class UserService{
             let val = queryObj[key];
 
             if(key === 'id'){
-                return await this.getUserById(+key);
+                return await this.getUserById(val);
             }
             
             if(!isValidString(val)){
