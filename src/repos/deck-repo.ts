@@ -59,17 +59,15 @@ export class DeckRepository{
 
         try{
             client = await connectionPool.connect();
-            console.log('add one');
             let sqlOne = `
                 insert into decks (author_id, deck_name)
                 values
                     ($1, $2);
             `;
             await client.query(sqlOne, [newDeck.authorId, newDeck.deckname]);
-            console.log('add two');
+
             let rsTwo = await this.getByAuthorIdAndName(newDeck.authorId, newDeck.deckname);
-            console.log(rsTwo);
-            console.log('add THREE');
+
             let sqlTwo = `
                 insert into deck_card (deck_id, card_id)
                 values
@@ -79,7 +77,6 @@ export class DeckRepository{
                 await client.query(sqlTwo, [rsTwo, newDeck.deckArray[i]]);
             }
 
-            console.log('FOUR');
             newDeck.deckId = rsTwo;
 
             return newDeck;
@@ -114,43 +111,56 @@ export class DeckRepository{
 
     }
 
-    deleteById(id: number): Promise<boolean>{
+    async deleteById(id: number): Promise<boolean>{
 
-        return new Promise<boolean>((resolve, reject) => {
+        let client: PoolClient;
 
-
-
-        });
-
-    }
-
-    getByName(input: string): Promise<Deck>{
-
-        return new Promise<Deck>((resolve, reject) => {
-
-            setTimeout(() => {
-
-                let card = {...deckData.find(deck => deck.deckname === input)};
-                resolve(card);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sqlOne = 'delete from deck_card where deck_id = $1';
+            await client.query(sqlOne, [id]);
+            let sqlTwo = 'delete from decks where id = $1';
+            await client.query(sqlTwo, [id]);
+            return true;
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    getByAuthorId(id: number): Promise<Deck[]>{
-        
-        return new Promise<Deck[]>((resolve, reject) => {            
+    async getByName(input: string): Promise<Deck[]>{
 
-            setTimeout(() => {
-                
-                let decks = deckData.filter(deck => deck.authorId === id);
-                resolve(decks);
+        let client: PoolClient;
 
-            }, 1000);
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseSql} where deck_name = $1`;
+            let rs = await client.query(sql, [input]);
+            return rs.rows;
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
-        });
+    }
+
+    async getByAuthorId(id: number): Promise<Deck[]>{         
+
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseSql} where author_id = $1`;
+            let rs = await client.query(sql, [id]);
+            return rs.rows;
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
