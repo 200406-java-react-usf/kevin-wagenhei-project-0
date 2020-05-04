@@ -12,9 +12,8 @@ import {
     AuthenticationError,
     ResourceConflictError,
     InvalidInputError,
-    AuthorizationError
+    InternalServerError
 } from '../errors/errors';
-import deckData from '../data/deck-db';
 
 export class DeckService {
 
@@ -22,129 +21,159 @@ export class DeckService {
         this.deckRepo = deckRepo;
     }
 
-    getAllDecks(): Promise<Deck[]> {
-
-        return new Promise<Deck[]>(async (resolve,reject) => {
+    async getAllDecks(): Promise<Deck[]> {
             
-            let result = await this.deckRepo.getAll();
+        let result = await this.deckRepo.getAll();
 
-            if (result.length === 0){
-                reject(new ResourceNotFoundError('No decks in the database'));
-                return;
-            }
+        if (result.length === 0){
+            throw new ResourceNotFoundError('No decks in the database');
+        }
 
-            resolve(result);
-
-        });
+        return result;
+    
     }
 
-    getDeckById(id: number): Promise<Deck> {
+    async getDeckById(id: number): Promise<Deck[]> {
 
-        return new Promise<Deck>(async (resolve,reject) => {
+        if(!isValidId(id)){
+            throw new InvalidInputError('Valid ID was not input');
+        }
 
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        let deck = await this.deckRepo.getById(id);
 
-            let deck = {...await this.deckRepo.getById(id)};
+        if (!isEmptyObject(deck)){
+            throw new ResourceNotFoundError('No deck found with that ID');
+        }
 
-            if (!isEmptyObject(deck)){
-                reject(new ResourceNotFoundError('No deck found with that ID'));
-                return;
-            }
-
-            resolve(deck);
-
-        });
+        return deck;
 
     }
 
-    addNewDeck(newDeck: Deck): Promise<Deck> {
+    async addNewDeck(newDeck: Deck): Promise<Deck> {
 
-        return new Promise<Deck>(async (resolve,reject) => {
+        try{
 
             if(!isValidObject(newDeck, 'deckId')){
-                reject(new InvalidInputError('Valid Object was not input'));
-                return;
+                throw new InvalidInputError('Valid Object was not input');
             }
 
-            let conflict = deckData.filter(deck => deck.authorId === newDeck.authorId && deck.deckname === newDeck.deckname);
+            let conflict = await this.checkForDuplicateNames(newDeck.authorId, newDeck.deckname);
 
-            if(conflict.length !== 0){
-                reject(new ResourceConflictError('One author cannot make two decks with the same name'));
-                return;
+            if(!conflict){
+                throw new ResourceConflictError('One author cannot make two decks with the same name');
             }
 
-            try{
-                const persistedDeck = await this.deckRepo.save(newDeck);
-                resolve(persistedDeck);
-            } catch (e){
-                reject(e);
-            }
+            const persistedDeck = await this.deckRepo.save(newDeck);
 
-        });
+            return persistedDeck;
+
+        } catch(e){
+            
+            throw e;
+
+        }    
 
     }
 
-    updateDeck(updateDeck: Deck): Promise<Deck>{
+    private async checkForDuplicateNames(authorId: number, name: string): Promise<boolean>{
 
-        return new Promise<Deck> (async (resolve,reject) => {
+        try{
+            await this.deckRepo.getByAuthorIdAndName(authorId, name);
+        }catch (e){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    async updateDeck(updateDeck: Deck): Promise<Deck>{
+
+        try{
 
             if(!isValidId(updateDeck.deckId) || !isValidObject(updateDeck, 'id')){
-                reject(new InvalidInputError('Valid deck object was not input'));
-                return;
+                throw new InvalidInputError('Valid deck object was not input');
             }
 
-            try{
-                resolve(await this.deckRepo.save(updateDeck));
-            } catch(e){
-                reject(e);
+            let decktoUpdate = await this.getDeckById(updateDeck.deckId);
+
+            if(!decktoUpdate){
+                throw new ResourceNotFoundError('No deck found to update');
             }
 
-        });
+            let deckConflict = this.checkForDuplicateNames(updateDeck.authorId,updateDeck.deckname);
+
+            //NEED TO ADD MAPPING TO MAKE THIS WORK
+            // if(decktoUpdate.deckname === updateDeck.deckname){
+            //     deckConflict = true;
+            // }
+
+            if(!deckConflict){
+                throw new ResourceNotFoundError('One of your decks already has that name');
+            }
+
+            let persistedDeck = await this.deckRepo.update(updateDeck);
+
+            return persistedDeck;
+
+        } catch (e){
+            throw e;
+        }
 
     }
 
-    getDeckByName(name: string): Promise<Deck>{
+    async getDeckByName(name: string): Promise<Deck[]>{
 
-        return new Promise<Deck>(async(resolve,reject) => {
+        if (!isValidString(name)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if (!isValidString(name)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let deck = await this.deckRepo.getByName(name);
 
-            let deck = await this.deckRepo.getByName(name);
+        if(!isEmptyObject(deck)){
+            throw new ResourceNotFoundError('Deck with that name was not found.');
+        }
 
-            if(!isEmptyObject(deck)){
-                return reject(new ResourceNotFoundError('Deck with that name was not found.'))
-            }
-
-            resolve(deck);
-
-        });
+        return deck;
 
     }
 
-    getDeckByAuthorId(id: number): Promise<Deck[]>{
+    async getDeckByAuthorId(id: number): Promise<Deck[]>{
 
-        return new Promise<Deck[]>(async (resolve,reject) => {
+        if(!isValidId(id)){
+            throw new InvalidInputError('Valid ID was not input');
+        }
 
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        let deck = await this.deckRepo.getByAuthorId(id);
 
-            let deck = await this.deckRepo.getByAuthorId(id);
+        if(!isEmptyObject(deck)){
+            throw new ResourceNotFoundError();
+        }
 
-            if(!isEmptyObject(deck)){
-                return reject(new ResourceNotFoundError);
-            }
+        return deck;
 
-            resolve(deck);
+    }
 
-        });
+    async deleteDeck(id: number): Promise<boolean>{
+
+        let keys = Object.keys(id);
+        let val = keys[0];
+
+        let deckID = +id[val];
+
+        if(!isValidId(deckID)){
+            throw new InvalidInputError('Invalid ID was input');
+        }
+
+        let deckToDelete = await this.getDeckById(deckID);
+
+        if(!deckToDelete){
+            throw new ResourceNotFoundError('Deck does not exist or was already deleted');
+        }
+
+        let persistedDeck = await this.deckRepo.deleteById(deckID);
+
+        return persistedDeck;
 
     }
 

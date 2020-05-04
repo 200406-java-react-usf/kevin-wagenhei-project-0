@@ -1,135 +1,166 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
 import cardData from '../data/card-db';
-import {ResourceNotFoundError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import { PoolClient} from 'pg';
+import { connectionPool } from '..';
+import {mapCardResultSet} from '../util/result-set-mapper';
 
 export class CardRepository implements CrudRepository<Card>{
 
-    getAll(): Promise<Card[]>{
+    async getAll(): Promise<Card[]>{
 
-        return new Promise((resolve) =>{
+        let client: PoolClient;
 
-            setTimeout(()=> {
-
-                let card: Card[] = cardData;
-                resolve(card);
-
-            },1000);
-
-        });
-
-    }
-
-    getById(id: number): Promise<Card>{
-
-        return new Promise<Card>((resolve) => {
-
-            setTimeout(() => {
-
-                const card: Card = {...cardData.find(card => card.id === id)};
-                resolve(card);
-
-            }, 1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from cards';
+            let rs = await client.query(sql);
+            return rs.rows.map(mapCardResultSet);
+        }catch(e){
+            throw new InternalServerError;
+        }
 
     }
 
-    getCardByUniqueKey(key: string, val: string): Promise<Card> {
+    async getById(id: number): Promise<Card>{
 
-        return new Promise<Card>((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
-
-                const card = {...cardData.find(card => card[key] === val)};
-                resolve(card);
-
-            }, 1000);
-
-        });
-
-    }
-
-    save(newCard: Card): Promise<Card>{
-
-        return new Promise<Card>((resolve) => {
-
-            setTimeout(() => {
-
-                newCard.id = (cardData.length) + 1;
-                cardData.push(newCard);
-                resolve(newCard);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = `select * from cards where id = $1`;
+            let rs = await client.query(sql, [id]);
+            return mapCardResultSet(rs.rows[0]);
+        } catch(e){
+            throw new InternalServerError();
+        }
 
     }
 
-    update(updatedCard: Card): Promise<Card>{
+    async getCardByUniqueKey(key: string, val: string): Promise<Card> {
 
-        return new Promise<Card>((resolve, reject) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        if(key === 'name') {key = 'card_name'};
+        if(key === 'deckWinrate') {key = 'deck_winrate'};
+        if(key === 'playedWinrate') {key = 'played_winrate'};
 
-                let cardToBeUpdated = cardData.find(card => card.id === updatedCard.id);
-
-                if(!cardToBeUpdated){
-                    reject(new ResourceNotFoundError('Card you want to update does not exist'));
-                    return;
-                }
-
-                if(cardToBeUpdated.name !== updatedCard.name || cardToBeUpdated.rarity !== updatedCard.rarity){
-                    reject(new ResourceConflictError('Cannot update card name or rarity'));
-                    return;
-                }
-
-                cardToBeUpdated = updatedCard;
-                resolve(cardToBeUpdated);
-
-            },1000);
-
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = `select * from cards where ${key} = $1`;
+            let rs = await client.query(sql,[val]);
+            return mapCardResultSet(rs.rows[0]);
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    deleteById(id: number): Promise<boolean>{
+    async save(newCard: Card): Promise<Card>{
 
-        return new Promise<boolean>((resolve,reject) => {
+        let client: PoolClient;
 
+        try{
+            client = await connectionPool.connect();
 
+            let sql = `insert into cards (card_name, rarity, deck_winrate, played_winrate) values ($1, $2, $3, $4)`;
 
-        });
+            await client.query(sql, [newCard.name,newCard.rarity,newCard.deckWinrate,newCard.playedWinrate]);
+
+            let sqlId = `select * from cards where card_name = $1`;
+
+            let rs = await client.query(sqlId, [newCard.name]);
+
+            newCard.id = rs.rows[0].id;
+
+            return newCard;
+
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    getByRarity(inputRarity: string): Promise<Card[]>{
+    async update(updatedCard: Card): Promise<Card>{
 
-        return new Promise((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try{
+            client = await connectionPool.connect();
 
-                let rarityArray = cardData.filter(card => card.rarity === inputRarity);
-                resolve(rarityArray);
+            let sql = `
+                update cards
+                    set
+                        deck_winrate = $2,
+                        played_winrate = $3
+                    where id = $1    
+            `;
 
-            }, 1000);
+            await client.query(sql, [updatedCard.id,updatedCard.deckWinrate, updatedCard.playedWinrate]);
 
-        });
+            return updatedCard;
+
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 
-    getByName(inputName: string): Promise<Card>{
+    async deleteById(id: number): Promise<boolean>{
 
-        return new Promise<Card>((resolve) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try{
+            client = await connectionPool.connect();
+            let sql = `delete from cards where id = $1`;
+            await client.query(sql, [id]);
+            return true;
+        } catch(e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
-                let card = {...cardData.find(card => card.name === inputName)};
-                resolve(card);
+    }
 
-            },1000);
+    async getByRarity(inputRarity: string): Promise<Card[]>{
 
-        });
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from cards where rarity = $1';
+            let rs = await client.query(sql, [inputRarity]);
+            return rs.rows.map(mapCardResultSet);
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
+
+    }
+
+    async getByName(inputName: string): Promise<Card>{
+
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from cards where card_name = $1';
+            let rs = await client.query(sql, [inputName]);
+            return mapCardResultSet(rs.rows[0]);
+        } catch (e){
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
+        }
 
     }
 

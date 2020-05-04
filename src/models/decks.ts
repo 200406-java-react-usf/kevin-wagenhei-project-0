@@ -5,9 +5,9 @@ export class Deck{
     deckId: number;
     authorId: number
     deckname: string;
-    deckArray: Card[];
+    deckArray: number[];
 
-    constructor(id:number, authorId: number, name:string, da: Card[]){
+    constructor(id:number, authorId: number, name:string, da: number[]){
 
         this.deckId = id;
         this.authorId = authorId;

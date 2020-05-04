@@ -47,3 +47,29 @@ CardRouter.post('', async (req,resp) => {
     resp.send();
 
 });
+
+CardRouter.put('', async(req,resp) => {
+
+    try{
+        let payload = await cardService.updateCard(req.body);
+        resp.status(200).json(payload);
+    } catch(e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});
+
+CardRouter.delete('', async(req, resp) => {
+
+    try{
+        let payload = await cardService.deleteCard(req.body);
+        resp.status(202).json(payload);
+    } catch (e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});

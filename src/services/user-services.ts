@@ -13,7 +13,6 @@ import {
     ResourceConflictError,
     InvalidInputError
 } from '../errors/errors';
-import userData from '../data/user-db';
 
 export class UserService{
 
@@ -21,179 +20,218 @@ export class UserService{
         this.userRepo = userRepo;
     }
 
-    getAllUsers(): Promise<User[]>{
+    async getAllUsers(): Promise<User[]>{
 
-        return new Promise<User[]>(async (resolve,reject) => {
+        let result = await this.userRepo.getAll();
 
-            let result = await this.userRepo.getAll();
+        if(result.length === 0){
+            throw new ResourceNotFoundError('No users in database');
+        }
 
-            if(result.length === 0){
-                reject(new ResourceNotFoundError('No users in database'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;
 
     }
 
-    getUserById(id: number): Promise<User> {
+    async getUserById(id: number): Promise<User> {
 
-        return new Promise<User>(async (resolve,reject) => {
+        if(!isValidId(id)){
+            throw new InvalidInputError('Valid ID was not input');
+        }
 
-            if(!isValidId(id)){
-                reject(new InvalidInputError('Valid ID was not input'));
-                return;
-            }
+        let result = await this.userRepo.getById(id);
 
-            let result = {...await this.userRepo.getById(id)};
+        if(!isEmptyObject(result)){
+            throw new ResourceNotFoundError('No user with that ID found');
+        }
 
-            if(!isEmptyObject(result)){
-                reject(new ResourceNotFoundError('No user with that ID found'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;        
 
     }
 
-    getUserByUniqueKey(queryObj: any): Promise<User>{
+    async getUserByUniqueKey(queryObj: any): Promise<User>{
 
-        return new Promise<User> (async (resolve, reject) => {
+        try {
+            
+            let queryKeys = Object.keys(queryObj);
 
-            try {
+            if(!queryKeys.every(key => isPropertyOf(key, User))){
+                throw new InvalidInputError();
+            }
+            
+            let key = queryKeys[0];
+            let val = queryObj[key];
 
-                let queryKeys = Object.keys(queryObj);
-
-                if(!queryKeys.every(key => isPropertyOf(key, User))){
-                    return reject(new InvalidInputError());
-                }
-
-                let key = queryKeys[0];
-                let val = queryKeys[key];
-
-                if(key === 'id'){
-                    return resolve(await this.getUserById(+key));
-                }
-
-                if(!isValidString(val)){
-                    return reject(new InvalidInputError());
-                }
-
-                let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
-
-                if(!isEmptyObject(user)){
-                    return reject(new ResourceNotFoundError());
-                }
-
-                resolve(user);
-
-            } catch (e) {
-
-                reject(e);
-
+            if(key === 'id'){
+                return await this.getUserById(+key);
+            }
+            
+            if(!isValidString(val)){
+                throw new InvalidInputError();
+            }
+            
+            let user = await this.userRepo.getUserByUniqueKey(key, val);
+            
+            if(!isEmptyObject(user)){
+                throw new ResourceNotFoundError();
             }
 
-        });
+            return user;
+
+        } catch (e) {
+
+            throw e;
+
+        }
 
     }
 
-    addNewUser(newUser: User): Promise<User>{
+    async addNewUser(newUser: User): Promise<User>{
 
-        return new Promise<User> (async (resolve,reject) => {
-
+        try{
+            
             if(!isValidObject(newUser, 'id')){
-                reject(new InvalidInputError('Valid Object was not input'));
-                return;
+                throw new InvalidInputError('Valid Object was not input');
             }
 
-            //GET BY UNIQUE KEY
-            let usernameConflict = userData.filter(user => user.username == newUser.username);
-            let emailConflict = userData.filter(user => user.email === newUser.email);
+            let usernameConflict = await this.isUsernameAvailable(newUser.username);
 
-            if(usernameConflict.length !== 0){
-                reject(new ResourceConflictError('Username already exists'));
-                return;
+            if(!usernameConflict){
+                throw new ResourceConflictError('Username already exists');
             }
 
-            if(emailConflict.length !== 0){
-                return reject(new ResourceConflictError('Email already in use'));
-            }
+            let emailConflict = await this.isEmailAvailable(newUser.email);
 
-            try{
-                const persistedUser = await this.userRepo.save(newUser);
-                resolve(persistedUser);
-            } catch(e){
-                reject(e);
+            if(!emailConflict){
+                throw new ResourceConflictError('Email already in use');
             }
+            const persistedUser = await this.userRepo.save(newUser);
+            return persistedUser;
 
-        });
+        } catch (e){
+            throw e;
+        }    
+    
+    }
+
+    async isUsernameAvailable(username: string): Promise<boolean>{
+
+        try{
+            await this.getUserByUniqueKey({'username': username});
+        } catch(e){
+            return true;
+        }
+
+        return false;
 
     }
 
-    updateUser(updateUser: User): Promise<User>{
+    async isEmailAvailable(email: string): Promise<boolean>{
 
-        return new Promise<User>(async (resolve,reject) => {
+        try{
+            await this.getUserByUniqueKey({'email': email})
+        } catch(e){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    async updateUser(updateUser: User): Promise<User>{
+
+        try{
 
             if (!isValidObject(updateUser, 'id') || !isValidId(updateUser.id)){
-                reject(new InvalidInputError('Valid user was not input'));
-                return;
+                throw new InvalidInputError('Valid user was not input');
             }
 
-            try {
-                resolve(await this.userRepo.update(updateUser));
-            } catch (e){
-                reject(e);
+            let userToUpdate = await this.getUserById(updateUser.id);
+
+            if(!userToUpdate){
+                throw new ResourceNotFoundError('No user found to update');
             }
 
-        });
+            let emailConflict = await this.isEmailAvailable(updateUser.email);
+
+            if(userToUpdate.email === updateUser.email){
+                emailConflict = true;
+            }
+
+            if(!emailConflict){
+                throw new ResourceConflictError('Email already taken');
+            }
+
+            let usernameConflict = await this.isUsernameAvailable(updateUser.username);
+
+            if(userToUpdate.username === updateUser.username){
+                usernameConflict = true;
+            }
+
+            if(!usernameConflict){
+                throw new ResourceConflictError('Username is already taken');
+            }
+
+            let persistedUser = await this.userRepo.update(updateUser);
+            return persistedUser;
+
+        } catch (e){
+            throw e;
+        }
 
     }
 
-    getUserByUsername(un: string): Promise<User> {
+    async getUserByUsername(un: string): Promise<User> {
 
-        return new Promise<User>(async (resolve,reject) => {
+        if(!isValidString(un)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if(!isValidString(un)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let result = await this.userRepo.getByUsername(un);
 
-            let result = await this.userRepo.getByUsername(un);
+        if(!isEmptyObject(result)){
+            throw new ResourceNotFoundError('No user found with that username');
+        }
 
-            if(!isEmptyObject(result)){
-                reject(new ResourceNotFoundError('No user found with that username'));
-                return;
-            }
-
-            resolve(result);
-
-        });
+        return result;
 
     }
 
-    getUserByCredentials(un: string, pw: string): Promise<User> {
+    async getUserByCredentials(un: string, pw: string): Promise<User> {
 
-        return new Promise<User>(async (resolve,reject) => {
+        if(!isValidString(un, pw)){
+            throw new InvalidInputError('Valid string was not input');
+        }
 
-            if(!isValidString(un, pw)){
-                reject(new InvalidInputError('Valid string was not input'));
-                return;
-            }
+        let result = await this.userRepo.getByCredentials(un, pw);
 
-            let result = await this.userRepo.getByCredentials(un, pw);
+        if(!isEmptyObject(result)){
+            throw new AuthenticationError('Invalid credentials');
+        }
 
-            if(!isEmptyObject(result)){
-                reject(new AuthenticationError('Invalid credentials'));
-                return;
-            }
+        return result;
 
-            resolve(result);
+    }
 
-        });
+    async deleteUser(id:number): Promise<boolean>{
+        
+        let keys = Object.keys(id);
+        let val = keys[0]
+
+        let userID = +id[val];
+
+        if(!isValidId(userID)){
+            throw new InvalidInputError('Invalid ID was input');
+        }
+
+        let userToDelete = await this.getUserById(userID);
+
+        if(!userToDelete){
+            throw new ResourceNotFoundError('User does not exist, or was already deleted');
+        }
+
+        let persistedUser = await this.userRepo.deleteById(userID);
+        
+        return persistedUser;
 
     }
 

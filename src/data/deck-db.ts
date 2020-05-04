@@ -3,9 +3,9 @@ import {Card} from '../models/cards';
 
 let id: number = 1;
 
-let deckOneArray: Card[] = [
+let deckOneArray: number[] = [
 
-    new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
+   /*  new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
     new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
     new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
     new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
@@ -34,13 +34,13 @@ let deckOneArray: Card[] = [
     new Card(13, 'Leper Gnome', 'Common', 4.5, 1.9, 57.8, 41000, 52.8),
     new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
     new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
-    new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
+    new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49) */
 
 ];
 
-let deckTwoArray: Card[] = [
+let deckTwoArray: number[] = [
 
-    new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
+   /*  new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
     new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
     new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
     new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
@@ -70,12 +70,12 @@ let deckTwoArray: Card[] = [
     new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
     new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
     new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
-
+ */
 ];
 
-let deckThreeArray: Card[] = [
+let deckThreeArray: number[] = [
 
-    new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
+   /*  new Card(1, 'Escrivate', 'Common', 12.3, 1.4, 57.1, 100000, 54),
     new Card(15, 'Eaglehorn Bow', 'Rare', 5.1, 1.9, 57.2, 39000, 53.6),
     new Card(18, 'Shadow Madness', 'Rare', 3.8, 1.2, 53.4, 30000, 52),
     new Card(22, 'Mass Dispell', 'Rare', 3.5, 1.2, 50.5, 28000, 50.4),
@@ -105,7 +105,7 @@ let deckThreeArray: Card[] = [
     new Card(26, 'Coldlight Seer', 'Rare', 3, 2, 58, 23000, 53.6),
     new Card(11, 'Alexstraza', 'Legendary', 13.2, 1, 54.4, 49000, 62.6),
     new Card(2, 'Ice Barriar', 'Common', 9.7, 1.2, 54, 95000, 49)
-
+ */
 ];
 
 export default [
