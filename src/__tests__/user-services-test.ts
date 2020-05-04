@@ -623,4 +623,358 @@ describe('tests for the User Service', () => {
 
     });
 
+    test('should update a new user when updateUser is given a correct User that exists', async () => {
+
+        expect.assertions(2);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        let result = await sut.updateUser(new User(3,'update','update','update','update','update'));
+
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3);
+
+    });
+
+    test('should throw a ResourceNotFoundError when given an id to update that doesnt exist', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(50,'update','update','update','update','update'));
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
+    });
+
+    test('should throw a ResourceConflictError when updating to a username that already exists', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(false);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'Wagenheim','update','update','update','update'));
+        } catch(e){
+            expect(e instanceof ResourceConflictError).toBe(true);
+        }
+    });
+
+    test('should throw a ResourceConflictError when updating to a email that already exists', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(false);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'update','wagenheimk@me.com','update','update','update'));
+        } catch(e){
+            expect(e instanceof ResourceConflictError).toBe(true);
+        }
+    });
+
+    test('should still update when a user wants to keep their username but change everything else', async () => {
+
+        expect.assertions(2);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        let result = await sut.updateUser(new User(3,'Vacseal','update','update','update','update'));
+
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3);
+
+    });
+
+    test('should still update when a user wants to keep their email but change everything else', async () => {
+
+        expect.assertions(2);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        let result = await sut.updateUser(new User(3,'update','update','update','naliantro@live.com','update'));
+
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3);
+
+    });
+
+    test('Should throw InvalidInputError when given an invalid ID in the updated User', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(-1,'update','update','update','update','update'))
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('Should throw InvalidInputError when given an invalid User object in the updated User(username)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'','update','update','update','update'))
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('Should throw InvalidInputError when given an invalid User object in the updated User(first name)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'update','','update','update','update'))
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('Should throw InvalidInputError when given an invalid User object in the updated User(last name)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'update','update','','update','update'))
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('Should throw InvalidInputError when given an invalid User object in the updated User(email)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'update','update','update','','update'))
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('Should throw InvalidInputError when given an invalid User object in the updated User(password)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
+            return new Promise<User> ((resolve) => {
+                resolve(updateUser);
+            });
+        });
+
+        try{
+            await sut.updateUser(new User(3,'update','update','update','update',''))
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
 });
