@@ -17,25 +17,6 @@ class ResourceNotFoundError {
 
 }
 
-class AuthorizationError {
-
-    message: string;
-    statusCode: number;
-
-    constructor(reason?: string){
-
-        this.statusCode = 403;
-
-        if(!reason){
-            this.message = 'Authorization Error';
-        } else{
-            this.message = reason;
-        }
-
-    }
-
-}
-
 class InvalidInputError {
 
     message: string;
@@ -119,6 +100,5 @@ export {
     AuthenticationError,
     ResourceConflictError,
     InvalidInputError,
-    AuthorizationError,
     InternalServerError
 };
