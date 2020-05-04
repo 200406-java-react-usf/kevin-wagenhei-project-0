@@ -113,7 +113,7 @@ export class UserService{
     
     }
 
-    private async isUsernameAvailable(username: string): Promise<boolean>{
+    async isUsernameAvailable(username: string): Promise<boolean>{
 
         try{
             await this.getUserByUniqueKey({'username': username});
@@ -125,7 +125,7 @@ export class UserService{
 
     }
 
-    private async isEmailAvailable(email: string): Promise<boolean>{
+    async isEmailAvailable(email: string): Promise<boolean>{
 
         try{
             await this.getUserByUniqueKey({'email': email})
