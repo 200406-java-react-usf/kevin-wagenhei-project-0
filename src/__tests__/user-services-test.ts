@@ -3,6 +3,7 @@ import {UserRepository} from '../repos/user-repo';
 import {User} from '../models/users';
 import Validator from '../util/validator';
 import {ResourceNotFoundError, InvalidInputError, AuthenticationError, ResourceConflictError} from '../errors/errors';
+import { resolve } from 'dns';
 
 jest.mock('../repos/user-repo', () => {
 
@@ -976,5 +977,86 @@ describe('tests for the User Service', () => {
         }
 
     });
+
+    test('should return true when delete user is given a valid id of a user to be deleted', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockUsers = mockUsers.slice(0,id).concat(mockUsers.slice(id+1,mockUsers.length));
+                resolve(true);
+            });
+        });
+
+        let result = await sut.deleteUser({id: 3});
+
+        expect(result).toBe(true);
+
+    });
+
+    test('should return ResourceNotFoundError when id given does not exist', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockUsers = mockUsers.slice(0,id).concat(mockUsers.slice(id+1,mockUsers.length));
+                resolve(true);
+            });
+        });
+
+        try{
+            await sut.deleteUser({id: 3000});
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
+
+    });
+
+    test('should return InvalidInputError when id is not a valid ID', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User> ((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        });
+
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockUsers = mockUsers.slice(0,id).concat(mockUsers.slice(id+1,mockUsers.length));
+                resolve(true);
+            });
+        });
+
+        try{
+            await sut.deleteUser({id: -1});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    
 
 });
