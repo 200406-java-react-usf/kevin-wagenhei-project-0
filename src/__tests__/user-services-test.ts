@@ -312,7 +312,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a user that has a username that already exists', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a user that has a username that already exists', async () => {
 
         expect.assertions(1);
 
@@ -337,7 +337,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a user that has a email that already exists', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a user that has a email that already exists', async () => {
 
         expect.assertions(1);
 
@@ -362,7 +362,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a falsy user(un)', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a falsy user(un)', async () => {
 
         expect.assertions(1);
 
@@ -387,7 +387,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a falsy user(first name)', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a falsy user(first name)', async () => {
 
         expect.assertions(1);
 
@@ -412,7 +412,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a falsy user(last name)', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a falsy user(last name)', async () => {
 
         expect.assertions(1);
 
@@ -437,7 +437,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a falsy user(email)', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a falsy user(email)', async () => {
 
         expect.assertions(1);
 
@@ -462,7 +462,7 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a falsy user(password)', async () => {
+    test('should throw ResourceConflictError when passing in to addNewUsser a falsy user(password)', async () => {
 
         expect.assertions(1);
 
@@ -487,6 +487,140 @@ describe('tests for the User Service', () => {
 
     });
 
-    
+    test('should return correct user when given correct key and value for getByUniqueKey', async () => {
+
+        expect.assertions(2);
+
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User> ((resolve) => {
+               resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+
+        let result = await sut.getUserByUniqueKey({username: 'Vacseal'});
+
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3);
+
+    });
+
+    test('should return ResourceNotFoundError when given a value for getByUniqueKey that does not exist', async () => {
+
+        expect.assertions(1);
+
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User> ((resolve) => {
+               resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+
+        try{
+            await sut.getUserByUniqueKey({username: 'Meow'});
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
+
+    });
+
+    test('should return InvalidInputError when given a key for getByUniqueKey that does not exist', async () => {
+
+        expect.assertions(1);
+
+        Validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User> ((resolve) => {
+               resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+
+        try{
+            await sut.getUserByUniqueKey({meow: 'Vacseal'});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should return InvalidInputError when given a key and value for getByUniqueKey that does not exist', async () => {
+
+        expect.assertions(1);
+
+        Validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User> ((resolve) => {
+               resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+
+        try{
+            await sut.getUserByUniqueKey({meow: 'Meow'});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should return InvalidInputError when given a falsy value for val', async () => {
+
+        expect.assertions(1);
+
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        Validator.isValidString = jest.fn().mockReturnValue(false);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User> ((resolve) => {
+               resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+
+        try{
+            await sut.getUserByUniqueKey({Username: ''});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should return a user when getByUniqueKey is given an id key and a correct value', async () => {
+
+        expect.assertions(3);
+
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
+
+        sut.getUserById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<User>((resolve) => {
+                resolve(mockUsers.find(user => user.id === id));
+            });
+        })
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User> ((resolve) => {
+               resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+
+        let result = await sut.getUserByUniqueKey({id: 3});
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3)
+        expect(result.username).toBe('Vacseal');
+
+    });
 
 });
