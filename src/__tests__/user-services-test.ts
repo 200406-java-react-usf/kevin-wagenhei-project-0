@@ -294,7 +294,9 @@ describe('tests for the User Service', () => {
 
         Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-        mockRepo.getUserByUniqueKey = jest.fn().mockReturnValue(true);
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
 
         mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
             return new Promise<User> ((resolve) => {
@@ -318,6 +320,8 @@ describe('tests for the User Service', () => {
 
         sut.isUsernameAvailable = jest.fn().mockReturnValue(false);
 
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
         mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
             return new Promise<User> ((resolve) => {
                 mockUsers.push(newUser);
@@ -333,11 +337,13 @@ describe('tests for the User Service', () => {
 
     });
 
-    test('should throw ResourceConflictError when passing in a user that has a username that already exists', async () => {
+    test('should throw ResourceConflictError when passing in a user that has a email that already exists', async () => {
 
         expect.assertions(1);
 
         Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
 
         sut.isEmailAvailable = jest.fn().mockReturnValue(false);
 
@@ -355,5 +361,132 @@ describe('tests for the User Service', () => {
         }
 
     });
+
+    test('should throw ResourceConflictError when passing in a falsy user(un)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
+            return new Promise<User> ((resolve) => {
+                mockUsers.push(newUser);
+                resolve(newUser);
+            });
+        });
+
+        try{
+            await sut.addNewUser(new User(0,'','test','test','test','test'));
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should throw ResourceConflictError when passing in a falsy user(first name)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
+            return new Promise<User> ((resolve) => {
+                mockUsers.push(newUser);
+                resolve(newUser);
+            });
+        });
+
+        try{
+            await sut.addNewUser(new User(0,'test','','test','test','test'));
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should throw ResourceConflictError when passing in a falsy user(last name)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
+            return new Promise<User> ((resolve) => {
+                mockUsers.push(newUser);
+                resolve(newUser);
+            });
+        });
+
+        try{
+            await sut.addNewUser(new User(0,'test','test','','test','test'));
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should throw ResourceConflictError when passing in a falsy user(email)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
+            return new Promise<User> ((resolve) => {
+                mockUsers.push(newUser);
+                resolve(newUser);
+            });
+        });
+
+        try{
+            await sut.addNewUser(new User(0,'test','test','test','','test'));
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    test('should throw ResourceConflictError when passing in a falsy user(password)', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
+
+        sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+
+        mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
+            return new Promise<User> ((resolve) => {
+                mockUsers.push(newUser);
+                resolve(newUser);
+            });
+        });
+
+        try{
+            await sut.addNewUser(new User(0,'test','test','test','test',''));
+        } catch (e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
+
+    });
+
+    
 
 });
