@@ -2,6 +2,7 @@ import {UserRepository} from '../repos/user-repo';
 import * as mockIndex from '..';
 import * as mockMapper from '../util/result-set-mapper'
 import {User} from '../models/users';
+import {InternalServerError } from '../errors/errors';
 
 //Mock Connection Pool
 jest.mock('..', () => {
@@ -104,6 +105,259 @@ describe('testing for userRepo', () => {
         //Assert
         expect(result).toBeTruthy();
         expect(result instanceof User).toBeTruthy();        
+
+    });
+
+    test('should return InternalServerError when getbyId does not find a user with specified ID', async () => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(1000, 'un', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return false;
+                }),
+                release: jest.fn()
+            };
+        });
+
+        try{
+            await sut.getById(mockUser.id);
+        } catch(e){
+            expect(e instanceof InternalServerError).toBe(true);
+        }
+
+    });
+    
+    test('should return a new User Object when save adds a new user to the db', async () => {
+
+        //Arrange
+        expect.hasAssertions();
+
+        let mockUser = new User(1, 'un', 'fn', 'ln', 'email', 'password');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        //Act
+        let result = await sut.save(mockUser);
+
+        //Assert
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBeTruthy();        
+
+    });
+
+    test('should return InternalServerError when save runs into an error adding to the db', async () => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(0, 'un', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return false;
+                }),
+                release: jest.fn()
+            };
+        });
+
+        try{
+            await sut.save(mockUser);
+        } catch(e){
+            expect(e instanceof InternalServerError).toBe(true);
+        }
+
+    });
+
+    test('should return the updated user when update is given a valid user to update', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return mockUser;
+                }),
+                release: jest.fn()
+            };
+        });
+
+        let result = await sut.update(mockUser);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
+
+    test('should return InternalServerError when update is given a invalid user to update', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(0, '', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    throw new Error();
+                }),
+                release: jest.fn()
+            };
+        });
+
+        try{
+            await sut.update(mockUser);
+        } catch (e){
+            expect(e instanceof InternalServerError).toBe(true);
+        }
+
+    });
+
+    test('should return true when deleteById is given a valid id to delete', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return true;
+                }),
+                release: jest.fn()
+            };
+        });
+
+        let result = await sut.deleteById(mockUser.id);
+
+        expect(result).toBeTruthy();
+        expect(result).toBe(true);
+
+    });
+
+    test('should return InternalServerError when deleteById fails to delete a user', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    throw new Error;
+                }),
+                release: jest.fn()
+            };
+        });
+
+        try{
+            await sut.deleteById(mockUser.id);
+        } catch(e){
+            expect( e instanceof InternalServerError).toBe(true);
+        }
+
+    });
+
+    test('should return a user when getByUsername is given a valid ID', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getByUsername(mockUser.username);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
+
+    // test('should return a user when getByUsername ', async() => {
+
+    //     expect.hasAssertions();
+
+    //     let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        // (mockConnect as jest.Mock).mockImplementation(() => {
+        //     return {
+        //         query: jest.fn().mockImplementation(() => {
+        //             return false;
+        //         }),
+        //         release: jest.fn()
+        //     };
+        // });
+    //     try{
+    //         await sut.getByUsername(mockUser.username);
+    //     } catch(e){
+    //         expect(e instanceof InternalServerError).toBe(true);
+    //     }
+
+    // });
+
+    test('should return a user when getByCredentials is given a valid email', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getByCredentials(mockUser.username, mockUser.password);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
+
+    test('should return a user when getByUsername ', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, '', 'fn', 'ln', 'email', '');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return false;
+                }),
+                release: jest.fn()
+            };
+        });
+        try{
+            await sut.getByCredentials(mockUser.username,mockUser.password);
+        } catch(e){
+            expect(e instanceof InternalServerError).toBe(true);
+        }
+
+    });
+
+    test('should return a user when getByUniqueKey is given valid key and value', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getUserByUniqueKey('username', mockUser.username);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
+
+    test('should return a user when getByUniqueKey is given invalid key and value', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return false;
+                }),
+                release: jest.fn()
+            };
+        });
+
+        try{
+            await sut.getUserByUniqueKey('', mockUser.username);
+        } catch(e){
+            expect(e instanceof InternalServerError).toBe(true);
+        }
 
     });
 
