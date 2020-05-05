@@ -104,7 +104,7 @@ export class DeckService {
             let deckConflict = this.checkForDuplicateNames(updateDeck.authorId,updateDeck.deckname);
 
             //NEED TO ADD MAPPING TO MAKE THIS WORK
-            // if(decktoUpdate.deckname === updateDeck.deckname){
+            // if(decktoUpdate[0].deckname === updateDeck.deckname){
             //     deckConflict = true;
             // }
 
@@ -154,12 +154,12 @@ export class DeckService {
 
     }
 
-    async deleteDeck(id: number): Promise<boolean>{
+    async deleteDeck(jsonObj: Object): Promise<boolean>{
 
-        let keys = Object.keys(id);
+        let keys = Object.keys(jsonObj);
         let val = keys[0];
 
-        let deckID = +id[val];
+        let deckID = +jsonObj[val];
 
         if(!isValidId(deckID)){
             throw new InvalidInputError('Invalid ID was input');
