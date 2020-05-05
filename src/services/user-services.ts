@@ -128,7 +128,7 @@ export class UserService{
     async isEmailAvailable(email: string): Promise<boolean>{
 
         try{
-            await this.getUserByUniqueKey({'email': email})
+            await this.getUserByUniqueKey({'email': email});
         } catch(e){
             return true;
         }
@@ -215,7 +215,7 @@ export class UserService{
     async deleteUser(jsonObj: object): Promise<boolean>{
 
         let keys = Object.keys(jsonObj);
-        let val = keys[0]
+        let val = keys[0];
 
         let userID = +jsonObj[val];
 

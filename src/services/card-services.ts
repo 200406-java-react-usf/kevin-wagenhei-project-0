@@ -196,7 +196,7 @@ export class CardService {
             throw new InvalidInputError('Invalid ID was input');
         }
 
-        let cardToDelete = await this.getCardById(cardID)
+        let cardToDelete = await this.getCardById(cardID);
 
         if(!cardToDelete){
             throw new ResourceNotFoundError('Card does not exist, or was already deleted');
