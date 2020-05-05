@@ -1,10 +1,8 @@
 import {CrudRepository} from './crud-repo';
 import {Deck} from '../models/decks';
-import deckData from '../data/deck-db';
-import {ResourceNotFoundError, InvalidInputError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import {InternalServerError} from '../errors/errors';
 import {PoolClient} from 'pg';
 import {connectionPool} from '..';
-import { release } from 'os';
 
 
 export class DeckRepository{

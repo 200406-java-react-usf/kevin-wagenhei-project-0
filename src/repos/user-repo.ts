@@ -1,7 +1,6 @@
 import {CrudRepository} from './crud-repo';
 import {User} from '../models/users';
-import userData from '../data/user-db';
-import {ResourceNotFoundError, ResourceConflictError, InternalServerError, InvalidInputError} from '../errors/errors';
+import {InternalServerError} from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import {mapUserResultSet} from '../util/result-set-mapper';
@@ -42,16 +41,16 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
-     async getUserByUniqueKey(key: string, val: string): Promise<User> {
+    async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
         let client: PoolClient;        
         
-        if (key === 'firstName') {key = 'first_name'};
-        if (key === 'lastName') {key = 'last_name'};
+        if (key === 'firstName') {key = 'first_name';}
+        if (key === 'lastName') {key = 'last_name';}
 
         try{
             client = await connectionPool.connect();
-            let sql = `select * from app_users where ${key} = $1`
+            let sql = `select * from app_users where ${key} = $1`;
             let rs = await client.query(sql, [val]);
             return mapUserResultSet(rs.rows[0]);
         } catch(e){
@@ -77,16 +76,16 @@ export class UserRepository implements CrudRepository<User> {
 
             await client.query(sql, [newUser.username, newUser.password, newUser.email, newUser.firstName, newUser.lastName]);
 
-            let sqlId = `select * from app_users where username = $1`
+            let sqlId = `select * from app_users where username = $1`;
 
             let rs = await client.query(sqlId, [newUser.username]);
 
-            newUser.id = rs.rows[0].id
+            newUser.id = rs.rows[0].id;
 
             return newUser;
 
         }catch (e){
-                throw new InternalServerError();
+            throw new InternalServerError();
         } finally{
             client && client.release();
         }
@@ -126,7 +125,7 @@ export class UserRepository implements CrudRepository<User> {
 
         try{
             client = await connectionPool.connect();
-            let sql = `delete from app_users where id = $1;`
+            let sql = `delete from app_users where id = $1;`;
             await client.query(sql, [id]);
             return true;
         } catch (e){

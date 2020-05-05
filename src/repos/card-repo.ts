@@ -1,7 +1,6 @@
 import {CrudRepository} from './crud-repo';
 import {Card} from '../models/cards';
-import cardData from '../data/card-db';
-import {ResourceNotFoundError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import {InternalServerError} from '../errors/errors';
 import { PoolClient} from 'pg';
 import { connectionPool } from '..';
 import {mapCardResultSet} from '../util/result-set-mapper';
@@ -44,9 +43,9 @@ export class CardRepository implements CrudRepository<Card>{
 
         let client: PoolClient;
 
-        if(key === 'name') {key = 'card_name'};
-        if(key === 'deckWinrate') {key = 'deck_winrate'};
-        if(key === 'playedWinrate') {key = 'played_winrate'};
+        if(key === 'name') {key = 'card_name';}
+        if(key === 'deckWinrate') {key = 'deck_winrate';}
+        if(key === 'playedWinrate') {key = 'played_winrate';}
 
         try{
             client = await connectionPool.connect();
