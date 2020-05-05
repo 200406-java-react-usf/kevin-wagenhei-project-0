@@ -41,7 +41,7 @@ CardRouter.post('', async (req,resp) => {
         let payload = await cardService.addNewCard(req.body);
         resp.status(201).json(payload);
     } catch(e){
-        resp.status(e.statusCode).json(e)
+        resp.status(e.statusCode).json(e);
     }
 
     resp.send();
