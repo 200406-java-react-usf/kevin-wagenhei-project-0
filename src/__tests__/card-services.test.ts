@@ -2,8 +2,7 @@ import {CardService} from '../services/card-services';
 import {CardRepository} from '../repos/card-repo';
 import {Card} from '../models/cards';
 import Validator from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, AuthenticationError, ResourceConflictError, InternalServerError} from '../errors/errors';
-import cardDb from '../data/card-db';
+import {ResourceNotFoundError, InvalidInputError, ResourceConflictError} from '../errors/errors';
 
 jest.mock('../repos/card-repo', () => {
 
@@ -16,7 +15,7 @@ jest.mock('../repos/card-repo', () => {
         deleteById = jest.fn();
         getByRarity = jest.fn();
         getByName = jest.fn();
-    }
+    };
 
 });
 
@@ -45,7 +44,7 @@ describe('tests for the card Service', () => {
                 deleteById: jest.fn(),
                 getByUsername: jest.fn(),
                 getByCredentials: jest.fn()
-            }
+            };
         });
 
         sut = new CardService(mockRepo);
@@ -242,7 +241,7 @@ describe('tests for the card Service', () => {
 
         Validator.isValidString = jest.fn().mockReturnValue(true);
 
-        mockRepo.getByRarity = jest.fn().mockImplementation((rarity: string, pw: string) => {
+        mockRepo.getByRarity = jest.fn().mockImplementation((rarity: string) => {
             return new Promise<Card[]>((resolve) => resolve(mockCards.filter(card => card.rarity === rarity)));
         });
 
@@ -373,7 +372,7 @@ describe('tests for the card Service', () => {
 
         mockRepo.getCardByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<Card> ((resolve) => {
-               resolve(mockCards.find(user => user[key] === val));
+                resolve(mockCards.find(user => user[key] === val));
             });
         });
 
@@ -394,7 +393,7 @@ describe('tests for the card Service', () => {
 
         mockRepo.getCardByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<Card> ((resolve) => {
-               resolve(mockCards.find(user => user[key] === val));
+                resolve(mockCards.find(user => user[key] === val));
             });
         });
 
@@ -416,7 +415,7 @@ describe('tests for the card Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<Card> ((resolve) => {
-               resolve(mockCards.find(user => user[key] === val));
+                resolve(mockCards.find(user => user[key] === val));
             });
         });
 
@@ -438,7 +437,7 @@ describe('tests for the card Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<Card> ((resolve) => {
-               resolve(mockCards.find(user => user[key] === val));
+                resolve(mockCards.find(user => user[key] === val));
             });
         });
 
@@ -460,7 +459,7 @@ describe('tests for the card Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<Card> ((resolve) => {
-               resolve(mockCards.find(user => user[key] === val));
+                resolve(mockCards.find(user => user[key] === val));
             });
         });
 
@@ -488,13 +487,13 @@ describe('tests for the card Service', () => {
 
         mockRepo.getCardByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<Card> ((resolve) => {
-               resolve(mockCards.find(user => user[key] === val));
+                resolve(mockCards.find(user => user[key] === val));
             });
         });
 
         let result = await sut.getCardByUniqueKey({id: 3});
         expect(result).toBeTruthy();
-        expect(result.id).toBe(3)
+        expect(result.id).toBe(3);
         expect(result.name).toBe('Blizzard');
 
     });

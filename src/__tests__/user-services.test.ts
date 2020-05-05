@@ -3,7 +3,6 @@ import {UserRepository} from '../repos/user-repo';
 import {User} from '../models/users';
 import Validator from '../util/validator';
 import {ResourceNotFoundError, InvalidInputError, AuthenticationError, ResourceConflictError} from '../errors/errors';
-import { resolve } from 'dns';
 
 jest.mock('../repos/user-repo', () => {
 
@@ -16,7 +15,7 @@ jest.mock('../repos/user-repo', () => {
         deleteById = jest.fn();
         getByUsername = jest.fn();
         getByCredentials = jest.fn();
-    }
+    };
 
 });
 
@@ -45,7 +44,7 @@ describe('tests for the User Service', () => {
                 deleteById: jest.fn(),
                 getByUsername: jest.fn(),
                 getByCredentials: jest.fn()
-            }
+            };
         });
 
         sut = new UserService(mockRepo);
@@ -498,7 +497,7 @@ describe('tests for the User Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<User> ((resolve) => {
-               resolve(mockUsers.find(user => user[key] === val));
+                resolve(mockUsers.find(user => user[key] === val));
             });
         });
 
@@ -519,7 +518,7 @@ describe('tests for the User Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<User> ((resolve) => {
-               resolve(mockUsers.find(user => user[key] === val));
+                resolve(mockUsers.find(user => user[key] === val));
             });
         });
 
@@ -541,7 +540,7 @@ describe('tests for the User Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<User> ((resolve) => {
-               resolve(mockUsers.find(user => user[key] === val));
+                resolve(mockUsers.find(user => user[key] === val));
             });
         });
 
@@ -563,7 +562,7 @@ describe('tests for the User Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<User> ((resolve) => {
-               resolve(mockUsers.find(user => user[key] === val));
+                resolve(mockUsers.find(user => user[key] === val));
             });
         });
 
@@ -585,7 +584,7 @@ describe('tests for the User Service', () => {
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<User> ((resolve) => {
-               resolve(mockUsers.find(user => user[key] === val));
+                resolve(mockUsers.find(user => user[key] === val));
             });
         });
 
@@ -609,17 +608,17 @@ describe('tests for the User Service', () => {
             return new Promise<User>((resolve) => {
                 resolve(mockUsers.find(user => user.id === id));
             });
-        })
+        });
 
         mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
             return new Promise<User> ((resolve) => {
-               resolve(mockUsers.find(user => user[key] === val));
+                resolve(mockUsers.find(user => user[key] === val));
             });
         });
 
         let result = await sut.getUserByUniqueKey({id: 3});
         expect(result).toBeTruthy();
-        expect(result.id).toBe(3)
+        expect(result.id).toBe(3);
         expect(result.username).toBe('Vacseal');
 
     });
@@ -821,7 +820,7 @@ describe('tests for the User Service', () => {
         });
 
         try{
-            await sut.updateUser(new User(-1,'update','update','update','update','update'))
+            await sut.updateUser(new User(-1,'update','update','update','update','update'));
         } catch (e){
             expect(e instanceof InvalidInputError).toBe(true);
         }
@@ -851,7 +850,7 @@ describe('tests for the User Service', () => {
         });
 
         try{
-            await sut.updateUser(new User(3,'','update','update','update','update'))
+            await sut.updateUser(new User(3,'','update','update','update','update'));
         } catch (e){
             expect(e instanceof InvalidInputError).toBe(true);
         }
@@ -881,7 +880,7 @@ describe('tests for the User Service', () => {
         });
 
         try{
-            await sut.updateUser(new User(3,'update','','update','update','update'))
+            await sut.updateUser(new User(3,'update','','update','update','update'));
         } catch (e){
             expect(e instanceof InvalidInputError).toBe(true);
         }
@@ -911,7 +910,7 @@ describe('tests for the User Service', () => {
         });
 
         try{
-            await sut.updateUser(new User(3,'update','update','','update','update'))
+            await sut.updateUser(new User(3,'update','update','','update','update'));
         } catch (e){
             expect(e instanceof InvalidInputError).toBe(true);
         }
@@ -941,7 +940,7 @@ describe('tests for the User Service', () => {
         });
 
         try{
-            await sut.updateUser(new User(3,'update','update','update','','update'))
+            await sut.updateUser(new User(3,'update','update','update','','update'));
         } catch (e){
             expect(e instanceof InvalidInputError).toBe(true);
         }
@@ -971,7 +970,7 @@ describe('tests for the User Service', () => {
         });
 
         try{
-            await sut.updateUser(new User(3,'update','update','update','update',''))
+            await sut.updateUser(new User(3,'update','update','update','update',''));
         } catch (e){
             expect(e instanceof InvalidInputError).toBe(true);
         }

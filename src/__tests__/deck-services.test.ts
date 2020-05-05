@@ -16,7 +16,7 @@ jest.mock('../repos/deck-repo', () => {
         getByName = jest.fn();
         getByAuthorId = jest.fn();
         getByAuthorIdAndName = jest.fn();
-    }
+    };
 
 });
 
@@ -43,7 +43,7 @@ describe('tests for the card Service', () => {
                 getByName: jest.fn(),
                 getByAuthorId: jest.fn(),
                 getByAuthorIdAndName: jest.fn()
-            }
+            };
         });
 
         sut = new DeckService(mockRepo);
@@ -291,29 +291,6 @@ describe('tests for the card Service', () => {
 
     });
 
-    // test('should throw ResourceConflictError when passing in to addNewDeck a deck that has a name that already exists', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
-
-    //     sut.isCardAlreadyAdded = jest.fn().mockReturnValue(false);
-
-    //     mockRepo.save = jest.fn().mockImplementation((newCard: Card) => {
-    //         return new Promise<Card> ((resolve) => {
-    //             mockCards.push(newCard);
-    //             resolve(newCard);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.addNewCard(new Card(0,'Blizzard','test', 55.5, 55.5));
-    //     } catch (e){
-    //         expect(e instanceof ResourceConflictError).toBe(true);
-    //     }
-
-    // });
-
     test('should throw ResourceConflictError when passing in to addNewDeck a falsy name', async () => {
 
         expect.assertions(1);
@@ -388,33 +365,6 @@ describe('tests for the card Service', () => {
             expect(e instanceof ResourceNotFoundError).toBe(true);
         }
     });
-
-    // test('should throw a ResourceConflictError when updating to a deck name that user already has', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
-
-    //     sut.getCardById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<Card> ((resolve) => {
-    //             resolve(mockCards.find(card => card.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-    //         return new Promise<Card> ((resolve) => {
-    //             resolve(updateCard);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.updateCard(new Card(3,'Meow','Rare', 50,50));
-    //     } catch(e){
-    //         expect(e instanceof ResourceConflictError).toBe(true);
-    //     }
-
-    // });
 
     test('Should throw InvalidInputError when given an invalid ID in the updated Card', async () => {
 

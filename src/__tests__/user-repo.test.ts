@@ -1,6 +1,6 @@
 import {UserRepository} from '../repos/user-repo';
 import * as mockIndex from '..';
-import * as mockMapper from '../util/result-set-mapper'
+import * as mockMapper from '../util/result-set-mapper';
 import {User} from '../models/users';
 import {InternalServerError } from '../errors/errors';
 
@@ -10,14 +10,14 @@ jest.mock('..', () => {
         connectionPool: {
             connect: jest.fn()
         }
-    }
+    };
 });
 
 //Mock result set mapper
 jest.mock('../util/result-set-mapper', () => {
     return {
         mapUserResultSet: jest.fn()
-    }
+    };
 });
 
 describe('testing for userRepo', () => {
@@ -42,10 +42,10 @@ describe('testing for userRepo', () => {
                                 last_name: 'Wagenheim'
                             }
                         ]
-                    }
+                    };
                 }),
                 release: jest.fn()
-            }
+            };
         });
         (mockMapper.mapUserResultSet as jest.Mock).mockClear();
     });
@@ -75,9 +75,9 @@ describe('testing for userRepo', () => {
         expect.hasAssertions();
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
-                query: jest.fn().mockImplementation(() => { return {rows: []}}),
+                query: jest.fn().mockImplementation(() => { return {rows: []};}),
                 release: jest.fn()
-            }
+            };
         });
 
         //Act
@@ -268,27 +268,6 @@ describe('testing for userRepo', () => {
         expect(result instanceof User).toBe(true);
 
     });
-
-    // test('should return a user when getByUsername ', async() => {
-
-    //     expect.hasAssertions();
-
-    //     let mockUser = new User(3, 'un', 'fn', 'ln', 'email', 'password');
-        // (mockConnect as jest.Mock).mockImplementation(() => {
-        //     return {
-        //         query: jest.fn().mockImplementation(() => {
-        //             return false;
-        //         }),
-        //         release: jest.fn()
-        //     };
-        // });
-    //     try{
-    //         await sut.getByUsername(mockUser.username);
-    //     } catch(e){
-    //         expect(e instanceof InternalServerError).toBe(true);
-    //     }
-
-    // });
 
     test('should return a user when getByCredentials is given a valid email', async() => {
 

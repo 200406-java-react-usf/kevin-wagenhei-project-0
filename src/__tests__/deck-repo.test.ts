@@ -9,7 +9,7 @@ jest.mock('..', () => {
         connectionPool: {
             connect: jest.fn()
         }
-    }
+    };
 });
 
 describe('testing for userRepo', () => {
@@ -32,10 +32,10 @@ describe('testing for userRepo', () => {
                                 card_name: 'Mock Card'
                             }
                         ]
-                    }
+                    };
                 }),
                 release: jest.fn()
-            }
+            };
         });
     });
 
@@ -46,9 +46,9 @@ describe('testing for userRepo', () => {
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { 
-                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]}}),
+                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]};}),
                 release: jest.fn()
-            }
+            };
         });
 
         //Act
@@ -68,9 +68,9 @@ describe('testing for userRepo', () => {
         expect.hasAssertions();
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
-                query: jest.fn().mockImplementation(() => { return {rows: []}}),
+                query: jest.fn().mockImplementation(() => { return {rows: []};}),
                 release: jest.fn()
-            }
+            };
         });
 
         //Act
@@ -92,9 +92,9 @@ describe('testing for userRepo', () => {
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { 
-                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]}}),
+                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]};}),
                 release: jest.fn()
-            }
+            };
         });
 
         //Act
@@ -155,7 +155,7 @@ describe('testing for userRepo', () => {
 
         expect.hasAssertions();
 
-        let mockDeck = new Deck(2, 3, 'Nick\s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
+        let mockDeck = new Deck(2, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => {
@@ -164,8 +164,6 @@ describe('testing for userRepo', () => {
                 release: jest.fn()
             };
         });
-
-        //sut.getByAuthorIdAndName = jest.fn().mockReturnValue(2);
 
         try{
             await sut.save(mockDeck);
@@ -179,7 +177,7 @@ describe('testing for userRepo', () => {
 
         expect.hasAssertions();
 
-        let mockDeck = new Deck(2, 3, 'Nick\s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
+        let mockDeck = new Deck(2, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => {
@@ -270,9 +268,9 @@ describe('testing for userRepo', () => {
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { 
-                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]}}),
+                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]};}),
                 release: jest.fn()
-            }
+            };
         });
 
         let result = await sut.getByName(mockDeck.deckname);
@@ -294,7 +292,7 @@ describe('testing for userRepo', () => {
                     return;                        
                 }),
                 release: jest.fn()
-            }
+            };
         });
         try{
             await sut.getByName(mockDeck.deckname);
@@ -307,15 +305,13 @@ describe('testing for userRepo', () => {
     test('should return a Deck Array when getByAuthorId is given a valid authorID', async() => {
 
         expect.hasAssertions();
-
-        let mockDeck = new Deck(2, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
         
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { 
-                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]}}),
+                    return {rows: [[1, 2, 'Mock Deck', 'Mock Card']]};}),
                 release: jest.fn()
-            }
+            };
         });
 
         let result = await sut.getByAuthorId(3);
@@ -328,8 +324,6 @@ describe('testing for userRepo', () => {
     test('should return InternalServerError when getByAuthorId cant find a deck in db', async() => {
 
         expect.hasAssertions();
-
-        let mockDeck = new Deck(2, 3, '', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
         
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
@@ -337,7 +331,7 @@ describe('testing for userRepo', () => {
                     return;                        
                 }),
                 release: jest.fn()
-            }
+            };
         });
         try{
             await sut.getByAuthorId(3);
@@ -350,15 +344,13 @@ describe('testing for userRepo', () => {
     test('should return an id for a deck when getByAuthorIdAName is given valid authorId and name', async() => {
 
         expect.hasAssertions();
-
-        let mockDeck = new Deck(2, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
         
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { 
                     return 2; }),
                 release: jest.fn()
-            }
+            };
         });
 
         let result = await sut.getByAuthorIdAndName(3, 'Nick\'s Deck');
@@ -367,28 +359,6 @@ describe('testing for userRepo', () => {
         expect(result).toBe(2);
 
     });
-
-    // test('should return a InternalServerError when getByAuthorIdAName does not find a correct ID', async() => {
-
-    //     expect.hasAssertions();
-
-    //     let mockDeck = new Deck(2, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]);
-    //     (mockConnect as jest.Mock).mockImplementation(() => {
-    //         return {
-    //             query: jest.fn().mockImplementation(() => {
-    //                 return;
-    //             }),
-    //             release: jest.fn()
-    //         };
-    //     });
-
-    //     try{
-    //         await sut.getByAuthorIdAndName(3, 'Nick\'s Deck');
-    //     } catch(e){
-    //         expect(e instanceof InternalServerError).toBe(true);
-    //     }
-
-    // });
 
 });
 

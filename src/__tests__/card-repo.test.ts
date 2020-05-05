@@ -1,6 +1,6 @@
 import {CardRepository} from '../repos/card-repo';
 import * as mockIndex from '..';
-import * as mockMapper from '../util/result-set-mapper'
+import * as mockMapper from '../util/result-set-mapper';
 import {Card} from '../models/cards';
 import {InternalServerError} from '../errors/errors';
 
@@ -10,14 +10,14 @@ jest.mock('..', () => {
         connectionPool: {
             connect: jest.fn()
         }
-    }
+    };
 });
 
 //Mock result set mapper
 jest.mock('../util/result-set-mapper', () => {
     return {
         mapCardResultSet: jest.fn()
-    }
+    };
 });
 
 describe('testing for userRepo', () => {
@@ -41,10 +41,10 @@ describe('testing for userRepo', () => {
                                 played_winrate: 55.5
                             }
                         ]
-                    }
+                    };
                 }),
                 release: jest.fn()
-            }
+            };
         });
         (mockMapper.mapCardResultSet as jest.Mock).mockClear();
     });
@@ -75,9 +75,9 @@ describe('testing for userRepo', () => {
         expect.hasAssertions();
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
-                query: jest.fn().mockImplementation(() => { return {rows: []}}),
+                query: jest.fn().mockImplementation(() => { return {rows: []};}),
                 release: jest.fn()
-            }
+            };
         });
 
         //Act
