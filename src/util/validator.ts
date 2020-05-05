@@ -56,7 +56,7 @@ export const isPropertyOf = (prop: string, type: any) => {
 
         return new Type();
 
-    }
+    };
 
     let tempInstance;
     try{

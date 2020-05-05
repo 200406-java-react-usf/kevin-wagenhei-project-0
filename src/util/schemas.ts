@@ -1,5 +1,3 @@
-import { InternalServerError } from "../errors/errors";
-
 export interface UserSchema{
 
     id: number;
@@ -18,11 +16,5 @@ export interface CardSchema{
     rarity: string;
     deck_winrate: number;
     played_winrate: number;
-
-}
-
-export interface DeckSchema{
-
-
 
 }
