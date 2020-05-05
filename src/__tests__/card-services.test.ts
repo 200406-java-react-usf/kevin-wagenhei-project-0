@@ -2,7 +2,7 @@ import {CardService} from '../services/card-services';
 import {CardRepository} from '../repos/card-repo';
 import {Card} from '../models/cards';
 import Validator from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, AuthenticationError, ResourceConflictError} from '../errors/errors';
+import {ResourceNotFoundError, InvalidInputError, AuthenticationError, ResourceConflictError, InternalServerError} from '../errors/errors';
 import cardDb from '../data/card-db';
 
 jest.mock('../repos/card-repo', () => {
@@ -363,574 +363,407 @@ describe('tests for the card Service', () => {
 
     });
 
-    // test('should return correct user when given correct key and value for getByUniqueKey', async () => {
+    test('should return correct Card when given correct key and value for getByUniqueKey', async () => {
 
-    //     expect.assertions(2);
+        expect.assertions(2);
 
-    //     Validator.isPropertyOf = jest.fn().mockReturnValue(true);
-    //     Validator.isEmptyObject = jest.fn().mockReturnValue(true);
-    //     Validator.isValidString = jest.fn().mockReturnValue(true);
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
 
-    //     mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-    //         return new Promise<User> ((resolve) => {
-    //            resolve(mockUsers.find(user => user[key] === val));
-    //         });
-    //     });
+        mockRepo.getCardByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<Card> ((resolve) => {
+               resolve(mockCards.find(user => user[key] === val));
+            });
+        });
 
-    //     let result = await sut.getUserByUniqueKey({username: 'Vacseal'});
+        let result = await sut.getCardByUniqueKey({name: 'Blizzard'});
 
-    //     expect(result).toBeTruthy();
-    //     expect(result.id).toBe(3);
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3);
 
-    // });
+    });
 
-    // test('should return ResourceNotFoundError when given a value for getByUniqueKey that does not exist', async () => {
+    test('should return ResourceNotFoundError when given a value for getByUniqueKey that does not exist', async () => {
 
-    //     expect.assertions(1);
+        expect.assertions(1);
 
-    //     Validator.isPropertyOf = jest.fn().mockReturnValue(true);
-    //     Validator.isEmptyObject = jest.fn().mockReturnValue(false);
-    //     Validator.isValidString = jest.fn().mockReturnValue(true);
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
 
-    //     mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-    //         return new Promise<User> ((resolve) => {
-    //            resolve(mockUsers.find(user => user[key] === val));
-    //         });
-    //     });
+        mockRepo.getCardByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<Card> ((resolve) => {
+               resolve(mockCards.find(user => user[key] === val));
+            });
+        });
 
-    //     try{
-    //         await sut.getUserByUniqueKey({username: 'Meow'});
-    //     } catch(e){
-    //         expect(e instanceof ResourceNotFoundError).toBe(true);
-    //     }
+        try{
+            await sut.getCardByUniqueKey({name: 'Meow'});
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
 
-    // });
+    });
 
-    // test('should return InvalidInputError when given a key for getByUniqueKey that does not exist', async () => {
+    test('should return InvalidInputError when given a key for getByUniqueKey that does not exist', async () => {
 
-    //     expect.assertions(1);
+        expect.assertions(1);
 
-    //     Validator.isPropertyOf = jest.fn().mockReturnValue(false);
-    //     Validator.isEmptyObject = jest.fn().mockReturnValue(false);
-    //     Validator.isValidString = jest.fn().mockReturnValue(true);
+        Validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
 
-    //     mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-    //         return new Promise<User> ((resolve) => {
-    //            resolve(mockUsers.find(user => user[key] === val));
-    //         });
-    //     });
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<Card> ((resolve) => {
+               resolve(mockCards.find(user => user[key] === val));
+            });
+        });
 
-    //     try{
-    //         await sut.getUserByUniqueKey({meow: 'Vacseal'});
-    //     } catch(e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
+        try{
+            await sut.getCardByUniqueKey({meow: 'Blizzard'});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    // });
+    });
 
-    // test('should return InvalidInputError when given a key and value for getByUniqueKey that does not exist', async () => {
+    test('should return InvalidInputError when given a key and value for getByUniqueKey that does not exist', async () => {
 
-    //     expect.assertions(1);
+        expect.assertions(1);
 
-    //     Validator.isPropertyOf = jest.fn().mockReturnValue(false);
-    //     Validator.isEmptyObject = jest.fn().mockReturnValue(false);
-    //     Validator.isValidString = jest.fn().mockReturnValue(true);
+        Validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(false);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
 
-    //     mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-    //         return new Promise<User> ((resolve) => {
-    //            resolve(mockUsers.find(user => user[key] === val));
-    //         });
-    //     });
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<Card> ((resolve) => {
+               resolve(mockCards.find(user => user[key] === val));
+            });
+        });
 
-    //     try{
-    //         await sut.getUserByUniqueKey({meow: 'Meow'});
-    //     } catch(e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
+        try{
+            await sut.getCardByUniqueKey({meow: 'Meow'});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    // });
+    });
 
-    // test('should return InvalidInputError when given a falsy value for val', async () => {
+    test('should return InvalidInputError when given a falsy value for val', async () => {
 
-    //     expect.assertions(1);
+        expect.assertions(1);
 
-    //     Validator.isPropertyOf = jest.fn().mockReturnValue(true);
-    //     Validator.isEmptyObject = jest.fn().mockReturnValue(true);
-    //     Validator.isValidString = jest.fn().mockReturnValue(false);
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        Validator.isValidString = jest.fn().mockReturnValue(false);
 
-    //     mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-    //         return new Promise<User> ((resolve) => {
-    //            resolve(mockUsers.find(user => user[key] === val));
-    //         });
-    //     });
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<Card> ((resolve) => {
+               resolve(mockCards.find(user => user[key] === val));
+            });
+        });
 
-    //     try{
-    //         await sut.getUserByUniqueKey({Username: ''});
-    //     } catch(e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
+        try{
+            await sut.getCardByUniqueKey({Username: ''});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    // });
+    });
 
-    // test('should return a user when getByUniqueKey is given an id key and a correct value', async () => {
+    test('should return a card when getByUniqueKey is given an id key and a correct value', async () => {
 
-    //     expect.assertions(3);
+        expect.assertions(3);
 
-    //     Validator.isPropertyOf = jest.fn().mockReturnValue(true);
-    //     Validator.isEmptyObject = jest.fn().mockReturnValue(true);
-    //     Validator.isValidString = jest.fn().mockReturnValue(true);
+        Validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        Validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        Validator.isValidString = jest.fn().mockReturnValue(true);
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User>((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     })
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card>((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
-    //         return new Promise<User> ((resolve) => {
-    //            resolve(mockUsers.find(user => user[key] === val));
-    //         });
-    //     });
+        mockRepo.getCardByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<Card> ((resolve) => {
+               resolve(mockCards.find(user => user[key] === val));
+            });
+        });
 
-    //     let result = await sut.getUserByUniqueKey({id: 3});
-    //     expect(result).toBeTruthy();
-    //     expect(result.id).toBe(3)
-    //     expect(result.username).toBe('Vacseal');
+        let result = await sut.getCardByUniqueKey({id: 3});
+        expect(result).toBeTruthy();
+        expect(result.id).toBe(3)
+        expect(result.name).toBe('Blizzard');
 
-    // });
+    });
 
-    // test('should update a new user when updateUser is given a correct User that exists', async () => {
+    test('should update a new Card when updateUser is given a correct Card that exists', async () => {
 
-    //     expect.assertions(2);
+        expect.assertions(2);
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+        let result = await sut.updateCard(new Card(3,'Blizzard','Rare', 50,50));
 
-    //     let result = await sut.updateUser(new User(3,'update','update','update','update','update'));
+        expect(result).toBeTruthy();
+        expect(result.playedWinrate).toBe(50);
 
-    //     expect(result).toBeTruthy();
-    //     expect(result.id).toBe(3);
+    });
 
-    // });
+    test('should throw a ResourceNotFoundError when given an id to update that doesnt exist', async () => {
 
-    // test('should throw a ResourceNotFoundError when given an id to update that doesnt exist', async () => {
+        expect.assertions(1);
 
-    //     expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+        try{
+            await sut.updateCard(new Card(400000,'Blizzard','Rare', 50,50));
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
+    });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+    test('should throw a ResourceConflictError when updating a card name', async () => {
 
-    //     try{
-    //         await sut.updateUser(new User(50,'update','update','update','update','update'));
-    //     } catch(e){
-    //         expect(e instanceof ResourceNotFoundError).toBe(true);
-    //     }
-    // });
+        expect.assertions(1);
 
-    // test('should throw a ResourceConflictError when updating to a username that already exists', async () => {
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-    //     expect.assertions(1);
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(false);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        try{
+            await sut.updateCard(new Card(3,'Meow','Rare', 50,50));
+        } catch(e){
+            expect(e instanceof ResourceConflictError).toBe(true);
+        }
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+    });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+    test('should throw a ResourceConflictError when updating a card rarity', async () => {
 
-    //     try{
-    //         await sut.updateUser(new User(3,'Wagenheim','update','update','update','update'));
-    //     } catch(e){
-    //         expect(e instanceof ResourceConflictError).toBe(true);
-    //     }
-    // });
+        expect.assertions(1);
 
-    // test('should throw a ResourceConflictError when updating to a email that already exists', async () => {
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-    //     expect.assertions(1);
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(false);
+        try{
+            await sut.updateCard(new Card(3,'Blizzard','Meow', 50,50));
+        } catch(e){
+            expect(e instanceof ResourceConflictError).toBe(true);
+        }
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+    });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+    test('Should throw InvalidInputError when given an invalid ID in the updated Card', async () => {
 
-    //     try{
-    //         await sut.updateUser(new User(3,'update','wagenheimk@me.com','update','update','update'));
-    //     } catch(e){
-    //         expect(e instanceof ResourceConflictError).toBe(true);
-    //     }
-    // });
+        expect.assertions(1);
 
-    // test('should still update when a user wants to keep their username but change everything else', async () => {
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-    //     expect.assertions(2);
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        try{
+            await sut.updateCard(new Card(-1,'Blizzard','Rare', 50,50));
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+    });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+    test('Should throw InvalidInputError when given an invalid card object in the updated card(name)', async () => {
 
-    //     let result = await sut.updateUser(new User(3,'Vacseal','update','update','update','update'));
+        expect.assertions(1);
 
-    //     expect(result).toBeTruthy();
-    //     expect(result.id).toBe(3);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
 
-    // });
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    // test('should still update when a user wants to keep their email but change everything else', async () => {
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    //     expect.assertions(2);
+        try{
+            await sut.updateCard(new Card(3,'','Rare', 50,50));
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+    });
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+    test('Should throw InvalidInputError when given an invalid card object in the updated card(rarity)', async () => {
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+        expect.assertions(1);
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
 
-    //     let result = await sut.updateUser(new User(3,'update','update','update','naliantro@live.com','update'));
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     expect(result).toBeTruthy();
-    //     expect(result.id).toBe(3);
+        mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(updateCard);
+            });
+        });
 
-    // });
+        try{
+            await sut.updateCard(new Card(3,'Blizzard','', 50,50));
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    // test('Should throw InvalidInputError when given an invalid ID in the updated User', async () => {
+    });
 
-    //     expect.assertions(1);
+    test('should return true when delete user is given a valid id of a card to be deleted', async () => {
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(false);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(true);
+        expect.assertions(1);
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockCards = mockCards.slice(0,id).concat(mockCards.slice(id+1,mockCards.length));
+                resolve(true);
+            });
+        });
 
-    //     try{
-    //         await sut.updateUser(new User(-1,'update','update','update','update','update'))
-    //     } catch (e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
+        let result = await sut.deleteCard({id: 3});
 
-    // });
+        expect(result).toBe(true);
 
-    // test('Should throw InvalidInputError when given an invalid User object in the updated User(username)', async () => {
+    });
 
-    //     expect.assertions(1);
+    test('should return ResourceNotFoundError when id given does not exist', async () => {
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(false);
+        expect.assertions(1);
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockCards = mockCards.slice(0,id).concat(mockCards.slice(id+1,mockCards.length));
+                resolve(true);
+            });
+        });
 
-    //     try{
-    //         await sut.updateUser(new User(3,'','update','update','update','update'))
-    //     } catch (e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
+        try{
+            await sut.deleteCard({id: 3000});
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
 
-    // });
+    });
 
-    // test('Should throw InvalidInputError when given an invalid User object in the updated User(first name)', async () => {
+    test('should return InvalidInputError when id is not a valid ID', async () => {
 
-    //     expect.assertions(1);
+        expect.assertions(1);
 
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(false);
+        Validator.isValidId = jest.fn().mockReturnValue(false);
 
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+        sut.getCardById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Card> ((resolve) => {
+                resolve(mockCards.find(card => card.id === id));
+            });
+        });
 
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockCards = mockCards.slice(0,id).concat(mockCards.slice(id+1,mockCards.length));
+                resolve(true);
+            });
+        });
 
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
+        try{
+            await sut.deleteCard({id: -1});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-    //     try{
-    //         await sut.updateUser(new User(3,'update','','update','update','update'))
-    //     } catch (e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
-
-    // });
-
-    // test('Should throw InvalidInputError when given an invalid User object in the updated User(last name)', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(false);
-
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
-
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.updateUser(new User(3,'update','update','','update','update'))
-    //     } catch (e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
-
-    // });
-
-    // test('Should throw InvalidInputError when given an invalid User object in the updated User(email)', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(false);
-
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
-
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.updateUser(new User(3,'update','update','update','','update'))
-    //     } catch (e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
-
-    // });
-
-    // test('Should throw InvalidInputError when given an invalid User object in the updated User(password)', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-    //     Validator.isValidObject = jest.fn().mockReturnValue(false);
-
-    //     sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
-    //     sut.isEmailAvailable = jest.fn().mockReturnValue(true);
-
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.update = jest.fn().mockImplementation((updateUser: User) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(updateUser);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.updateUser(new User(3,'update','update','update','update',''))
-    //     } catch (e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
-
-    // });
-
-    // test('should return true when delete user is given a valid id of a user to be deleted', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(true);
-
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
-    //         return new Promise<boolean> ((resolve) => {
-    //             mockUsers = mockUsers.slice(0,id).concat(mockUsers.slice(id+1,mockUsers.length));
-    //             resolve(true);
-    //         });
-    //     });
-
-    //     let result = await sut.deleteUser({id: 3});
-
-    //     expect(result).toBe(true);
-
-    // });
-
-    // test('should return ResourceNotFoundError when id given does not exist', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(false);
-
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
-    //         return new Promise<boolean> ((resolve) => {
-    //             mockUsers = mockUsers.slice(0,id).concat(mockUsers.slice(id+1,mockUsers.length));
-    //             resolve(true);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.deleteUser({id: 3000});
-    //     } catch(e){
-    //         expect(e instanceof ResourceNotFoundError).toBe(true);
-    //     }
-
-    // });
-
-    // test('should return InvalidInputError when id is not a valid ID', async () => {
-
-    //     expect.assertions(1);
-
-    //     Validator.isValidId = jest.fn().mockReturnValue(false);
-
-    //     sut.getUserById = jest.fn().mockImplementation((id: number) => {
-    //         return new Promise<User> ((resolve) => {
-    //             resolve(mockUsers.find(user => user.id === id));
-    //         });
-    //     });
-
-    //     mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
-    //         return new Promise<boolean> ((resolve) => {
-    //             mockUsers = mockUsers.slice(0,id).concat(mockUsers.slice(id+1,mockUsers.length));
-    //             resolve(true);
-    //         });
-    //     });
-
-    //     try{
-    //         await sut.deleteUser({id: -1});
-    //     } catch(e){
-    //         expect(e instanceof InvalidInputError).toBe(true);
-    //     }
-
-    // });
+    });
 
     
 
