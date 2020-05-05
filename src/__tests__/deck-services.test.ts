@@ -2,12 +2,12 @@ import {DeckService} from '../services/deck-services';
 import {DeckRepository} from '../repos/deck-repo';
 import {Deck} from '../models/decks';
 import Validator from '../util/validator';
-import {ResourceNotFoundError, InvalidInputError, AuthenticationError, ResourceConflictError, InternalServerError} from '../errors/errors';
+import {ResourceNotFoundError, InvalidInputError} from '../errors/errors';
 
 
 jest.mock('../repos/deck-repo', () => {
 
-    return new class CardRepository{
+    return new class DeckRepository{
         getAll = jest.fn();
         getById = jest.fn();
         save = jest.fn();
