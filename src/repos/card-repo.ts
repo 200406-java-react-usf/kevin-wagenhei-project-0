@@ -19,6 +19,8 @@ export class CardRepository implements CrudRepository<Card>{
             return rs.rows.map(mapCardResultSet);
         }catch(e){
             throw new InternalServerError;
+        } finally{
+            client && client.release();
         }
 
     }
