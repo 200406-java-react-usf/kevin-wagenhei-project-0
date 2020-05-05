@@ -104,7 +104,7 @@ export class CardService {
             
     }
 
-    private async isCardAlreadyAdded(name:string): Promise<boolean>{
+    async isCardAlreadyAdded(name:string): Promise<boolean>{
 
         try{
             await this.getCardByUniqueKey({'name': name});
@@ -130,7 +130,7 @@ export class CardService {
             let val = queryObj[key];
 
             if(key === 'id'){
-                throw await this.getCardById(+key);
+                return await this.getCardById(val);
             }
 
             if(!isValidString(val)){
