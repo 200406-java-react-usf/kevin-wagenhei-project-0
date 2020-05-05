@@ -216,7 +216,7 @@ describe('tests for the card Service', () => {
 
     });
 
-    test('should return a Deck when getByRarity is given valid author ID', async () => {
+    test('should return a Deck when getByAuthorID is given valid author ID', async () => {
 
         expect.assertions(2);
 
@@ -337,9 +337,61 @@ describe('tests for the card Service', () => {
 
     });
 
-    // test('should update a new Card when updateUser is given a correct Card that exists', async () => {
+    test('should update a new Deck when updateDeck is given a correct Deck that exists', async () => {
 
-    //     expect.assertions(2);
+        expect.assertions(2);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateDeck: Deck) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(updateDeck);
+            });
+        });
+
+        let result = await sut.updateDeck(new Deck(2, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]));
+
+        expect(result).toBeTruthy();
+        expect(result.authorId).toBe(3);
+
+    });
+
+    test('should throw a ResourceNotFoundError when given an id to update that doesnt exist', async () => {
+
+        expect.assertions(1);
+
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
+
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
+
+        mockRepo.update = jest.fn().mockImplementation((updateDeck: Deck) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(updateDeck);
+            });
+        });
+
+        try{
+            await sut.updateDeck(new Deck(3000, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]));
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
+    });
+
+    // test('should throw a ResourceConflictError when updating to a deck name that user already has', async () => {
+
+    //     expect.assertions(1);
 
     //     Validator.isValidId = jest.fn().mockReturnValue(true);
     //     Validator.isValidObject = jest.fn().mockReturnValue(true);
@@ -356,253 +408,144 @@ describe('tests for the card Service', () => {
     //         });
     //     });
 
-    //     let result = await sut.updateCard(new Card(3,'Blizzard','Rare', 50,50));
-
-    //     expect(result).toBeTruthy();
-    //     expect(result.playedWinrate).toBe(50);
+    //     try{
+    //         await sut.updateCard(new Card(3,'Meow','Rare', 50,50));
+    //     } catch(e){
+    //         expect(e instanceof ResourceConflictError).toBe(true);
+    //     }
 
     // });
 
-//     test('should throw a ResourceNotFoundError when given an id to update that doesnt exist', async () => {
+    test('Should throw InvalidInputError when given an invalid ID in the updated Card', async () => {
 
-//         expect.assertions(1);
+        expect.assertions(1);
 
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-//         Validator.isValidObject = jest.fn().mockReturnValue(true);
+        Validator.isValidId = jest.fn().mockReturnValue(false);
+        Validator.isValidObject = jest.fn().mockReturnValue(true);
 
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
 
-//         mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(updateCard);
-//             });
-//         });
+        mockRepo.update = jest.fn().mockImplementation((updateDeck: Deck) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(updateDeck);
+            });
+        });
 
-//         try{
-//             await sut.updateCard(new Card(400000,'Blizzard','Rare', 50,50));
-//         } catch(e){
-//             expect(e instanceof ResourceNotFoundError).toBe(true);
-//         }
-//     });
+        try{
+            await sut.updateDeck(new Deck(-1, 3, 'Nick\'s Deck', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]));
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-//     test('should throw a ResourceConflictError when updating a card name', async () => {
+    });
 
-//         expect.assertions(1);
+    test('Should throw InvalidInputError when given an invalid deck object (updated deck name)', async () => {
 
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-//         Validator.isValidObject = jest.fn().mockReturnValue(true);
+        expect.assertions(1);
 
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
 
-//         mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(updateCard);
-//             });
-//         });
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
 
-//         try{
-//             await sut.updateCard(new Card(3,'Meow','Rare', 50,50));
-//         } catch(e){
-//             expect(e instanceof ResourceConflictError).toBe(true);
-//         }
+        mockRepo.update = jest.fn().mockImplementation((updateDeck: Deck) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(updateDeck);
+            });
+        });
 
-//     });
+        try{
+            await sut.updateDeck(new Deck(2, 3, '', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,30,29,28,27,26,25,24,23,22,21,19,18,17,16]));
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-//     test('should throw a ResourceConflictError when updating a card rarity', async () => {
+    });
 
-//         expect.assertions(1);
+    test('should return true when delete Deck is given a valid id of a card to be deleted', async () => {
 
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-//         Validator.isValidObject = jest.fn().mockReturnValue(true);
+        expect.assertions(1);
 
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
+        Validator.isValidId = jest.fn().mockReturnValue(true);
 
-//         mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(updateCard);
-//             });
-//         });
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
 
-//         try{
-//             await sut.updateCard(new Card(3,'Blizzard','Meow', 50,50));
-//         } catch(e){
-//             expect(e instanceof ResourceConflictError).toBe(true);
-//         }
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockDecks = mockDecks.slice(0,id).concat(mockDecks.slice(id+1,mockDecks.length));
+                resolve(true);
+            });
+        });
 
-//     });
+        let result = await sut.deleteDeck({deckId: 3});
 
-//     test('Should throw InvalidInputError when given an invalid ID in the updated Card', async () => {
+        expect(result).toBe(true);
 
-//         expect.assertions(1);
+    });
 
-//         Validator.isValidId = jest.fn().mockReturnValue(false);
-//         Validator.isValidObject = jest.fn().mockReturnValue(true);
+    test('should return ResourceNotFoundError when id given does not exist', async () => {
 
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
+        expect.assertions(1);
 
-//         mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(updateCard);
-//             });
-//         });
+        Validator.isValidId = jest.fn().mockReturnValue(true);
 
-//         try{
-//             await sut.updateCard(new Card(-1,'Blizzard','Rare', 50,50));
-//         } catch(e){
-//             expect(e instanceof InvalidInputError).toBe(true);
-//         }
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
 
-//     });
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockDecks = mockDecks.slice(0,id).concat(mockDecks.slice(id+1,mockDecks.length));
+                resolve(true);
+            });
+        });
+        try{
+            await sut.deleteDeck({id: 3000});
+        } catch(e){
+            expect(e instanceof ResourceNotFoundError).toBe(true);
+        }
 
-//     test('Should throw InvalidInputError when given an invalid card object in the updated card(name)', async () => {
+    });
 
-//         expect.assertions(1);
+    test('should return InvalidInputError when id is not a valid ID', async () => {
 
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-//         Validator.isValidObject = jest.fn().mockReturnValue(false);
+        expect.assertions(1);
 
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
+        Validator.isValidId = jest.fn().mockReturnValue(false);
 
-//         mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(updateCard);
-//             });
-//         });
+        sut.getDeckById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Deck> ((resolve) => {
+                resolve(mockDecks.find(deck => deck.deckId === id));
+            });
+        });
 
-//         try{
-//             await sut.updateCard(new Card(3,'','Rare', 50,50));
-//         } catch(e){
-//             expect(e instanceof InvalidInputError).toBe(true);
-//         }
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockDecks = mockDecks.slice(0,id).concat(mockDecks.slice(id+1,mockDecks.length));
+                resolve(true);
+            });
+        });
 
-//     });
+        try{
+            await sut.deleteDeck({id: -1});
+        } catch(e){
+            expect(e instanceof InvalidInputError).toBe(true);
+        }
 
-//     test('Should throw InvalidInputError when given an invalid card object in the updated card(rarity)', async () => {
-
-//         expect.assertions(1);
-
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-//         Validator.isValidObject = jest.fn().mockReturnValue(false);
-
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
-
-//         mockRepo.update = jest.fn().mockImplementation((updateCard: Card) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(updateCard);
-//             });
-//         });
-
-//         try{
-//             await sut.updateCard(new Card(3,'Blizzard','', 50,50));
-//         } catch(e){
-//             expect(e instanceof InvalidInputError).toBe(true);
-//         }
-
-//     });
-
-//     test('should return true when delete user is given a valid id of a card to be deleted', async () => {
-
-//         expect.assertions(1);
-
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
-
-//         mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
-//             return new Promise<boolean> ((resolve) => {
-//                 mockCards = mockCards.slice(0,id).concat(mockCards.slice(id+1,mockCards.length));
-//                 resolve(true);
-//             });
-//         });
-
-//         let result = await sut.deleteCard({id: 3});
-
-//         expect(result).toBe(true);
-
-//     });
-
-//     test('should return ResourceNotFoundError when id given does not exist', async () => {
-
-//         expect.assertions(1);
-
-//         Validator.isValidId = jest.fn().mockReturnValue(true);
-
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
-
-//         mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
-//             return new Promise<boolean> ((resolve) => {
-//                 mockCards = mockCards.slice(0,id).concat(mockCards.slice(id+1,mockCards.length));
-//                 resolve(true);
-//             });
-//         });
-
-//         try{
-//             await sut.deleteCard({id: 3000});
-//         } catch(e){
-//             expect(e instanceof ResourceNotFoundError).toBe(true);
-//         }
-
-//     });
-
-//     test('should return InvalidInputError when id is not a valid ID', async () => {
-
-//         expect.assertions(1);
-
-//         Validator.isValidId = jest.fn().mockReturnValue(false);
-
-//         sut.getCardById = jest.fn().mockImplementation((id: number) => {
-//             return new Promise<Card> ((resolve) => {
-//                 resolve(mockCards.find(card => card.id === id));
-//             });
-//         });
-
-//         mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
-//             return new Promise<boolean> ((resolve) => {
-//                 mockCards = mockCards.slice(0,id).concat(mockCards.slice(id+1,mockCards.length));
-//                 resolve(true);
-//             });
-//         });
-
-//         try{
-//             await sut.deleteCard({id: -1});
-//         } catch(e){
-//             expect(e instanceof InvalidInputError).toBe(true);
-//         }
-
-//     });
-
-    
+    });    
 
 });
