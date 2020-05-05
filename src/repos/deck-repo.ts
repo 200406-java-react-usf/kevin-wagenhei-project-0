@@ -4,6 +4,7 @@ import deckData from '../data/deck-db';
 import {ResourceNotFoundError, InvalidInputError, ResourceConflictError, InternalServerError} from '../errors/errors';
 import {PoolClient} from 'pg';
 import {connectionPool} from '..';
+import { release } from 'os';
 
 
 export class DeckRepository{
@@ -48,7 +49,9 @@ export class DeckRepository{
             let rs = await client.query(sql, [id]);
             return rs.rows;
         } catch(e){
-            
+            throw new InternalServerError();
+        } finally{
+            client && client.release();
         }
 
     }
@@ -120,7 +123,6 @@ export class DeckRepository{
             return updatedDeck;
 
         } catch(e){
-            console.log(e);
             throw new InternalServerError();
         } finally{
             client && client.release();
