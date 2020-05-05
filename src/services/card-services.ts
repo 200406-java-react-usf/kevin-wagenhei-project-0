@@ -185,12 +185,12 @@ export class CardService {
 
     }
 
-    async deleteCard(id: number): Promise<boolean>{
+    async deleteCard(jsonObj: Object): Promise<boolean>{
 
-        let keys = Object.keys(id);
+        let keys = Object.keys(jsonObj);
         let val = keys[0];
 
-        let cardID = +id[val];
+        let cardID = +jsonObj[val];
 
         if(!isValidId(cardID)){
             throw new InvalidInputError('Invalid ID was input');
