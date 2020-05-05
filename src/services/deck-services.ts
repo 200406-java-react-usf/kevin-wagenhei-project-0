@@ -75,7 +75,7 @@ export class DeckService {
 
     }
 
-    private async checkForDuplicateNames(authorId: number, name: string): Promise<boolean>{
+    async checkForDuplicateNames(authorId: number, name: string): Promise<boolean>{
 
         try{
             await this.deckRepo.getByAuthorIdAndName(authorId, name);
