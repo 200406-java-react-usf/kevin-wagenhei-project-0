@@ -7,6 +7,10 @@ import {mapUserResultSet} from '../util/result-set-mapper';
 
 export class UserRepository implements CrudRepository<User> {
 
+    /**
+     * Retrieves all Users in the database.
+     */
+
     async getAll(): Promise<User[]>{
 
         let client: PoolClient;
@@ -24,6 +28,11 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+    /**
+     * Retrives a User given their unique ID
+     * @param id {number} Unique ID given to a user when created
+     */
+
     async getById(id: number): Promise<User>{
 
         let client: PoolClient;
@@ -40,6 +49,12 @@ export class UserRepository implements CrudRepository<User> {
         }
 
     }
+
+    /**
+     * Retrieves a user given a key in the user object, and its value
+     * @param key {string} Key in the User object
+     * @param val {string} Value based on the given key
+     */
 
     async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
@@ -60,6 +75,11 @@ export class UserRepository implements CrudRepository<User> {
         }
 
     }
+
+    /**
+     * Adds a new User to the database.
+     * @param newUser {User} User Object
+     */
 
     async save(newUser: User): Promise<User>{
 
@@ -92,6 +112,11 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+    /**
+     * Updates an existing user based on the values given in the user passed in. Uses ID to find and update the existing user.
+     * @param updatedUser {User} User Object
+     */
+
     async update(updatedUser: User): Promise<User>{
 
         let client: PoolClient;
@@ -119,6 +144,11 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+    /**
+     * Deletes a user given its unique ID
+     * @param id {number} Unique ID of the user
+     */
+
     async deleteById(id: number): Promise<boolean>{
 
         let client: PoolClient;
@@ -136,6 +166,11 @@ export class UserRepository implements CrudRepository<User> {
 
     }
 
+    /**
+     * Retrieves a user given the username of the user.
+     * @param un {string} Username of the User
+     */
+
     async getByUsername(un: string): Promise<User>{
 
         let client: PoolClient;
@@ -152,6 +187,12 @@ export class UserRepository implements CrudRepository<User> {
         }
 
     }
+
+    /**
+     * Retrieves a user given the user's username and password
+     * @param un {string} Username
+     * @param pw {string} Password
+     */
 
     async getByCredentials(un: string, pw: string): Promise<User>{
 
