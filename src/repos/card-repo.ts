@@ -7,6 +7,10 @@ import {mapCardResultSet} from '../util/result-set-mapper';
 
 export class CardRepository implements CrudRepository<Card>{
 
+    /** 
+     * Retrieves an Array of Cards from the database
+    */
+
     async getAll(): Promise<Card[]>{
 
         let client: PoolClient;
@@ -24,6 +28,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
+    /**
+     * Retrieves a Card given an ID
+     * @param id {string} id : Unique number given to each card for Identification
+     */
+
     async getById(id: number): Promise<Card>{
 
         let client: PoolClient;
@@ -38,6 +47,12 @@ export class CardRepository implements CrudRepository<Card>{
         }
 
     }
+
+    /**
+     * Retrives a Card from the database given a correct Key/Value pair.
+     * @param key {string} The key in the Card Object
+     * @param val {string} The value from the respective Key
+     */
 
     async getCardByUniqueKey(key: string, val: string): Promise<Card> {
 
@@ -59,6 +74,11 @@ export class CardRepository implements CrudRepository<Card>{
         }
 
     }
+
+    /**
+     * Adds a new card to the database
+     * @param newCard {Card} Card object
+     */
 
     async save(newCard: Card): Promise<Card>{
 
@@ -87,6 +107,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
+    /**
+     * Takes in a new card object to update an existing card in the database. Uses ID to find the existing card, and changes the values in the existing object.
+     * @param updatedCard {Card} Card Object with the new values you want to update
+     */
+
     async update(updatedCard: Card): Promise<Card>{
 
         let client: PoolClient;
@@ -114,6 +139,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
+    /**
+     * Deletes a Card in the database. Finds the card to delete by ID
+     * @param id {number} Unique ID of the card being deleted
+     */
+
     async deleteById(id: number): Promise<boolean>{
 
         let client: PoolClient;
@@ -131,6 +161,11 @@ export class CardRepository implements CrudRepository<Card>{
 
     }
 
+    /**
+     * Returns an array of cards that match the Rarity given in the input.
+     * @param inputRarity {string} Rarity you are searching for.
+     */
+
     async getByRarity(inputRarity: string): Promise<Card[]>{
 
         let client: PoolClient;
@@ -147,6 +182,11 @@ export class CardRepository implements CrudRepository<Card>{
         }
 
     }
+
+    /**
+     * Finds a Card based on the name.
+     * @param inputName {string} The name of the Card.
+     */
 
     async getByName(inputName: string): Promise<Card>{
 
