@@ -35,6 +35,21 @@ CardRouter.get('/:id', async (req, resp) => {
 
 });
 
+CardRouter.get('/rarity/:rarity', async (req, resp) => {
+
+    const rarity = req.params.rarity;
+
+    try{
+        let payload = await cardService.getCardByRarity(rarity);
+        resp.status(200).json(payload);
+    } catch(e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});
+
 CardRouter.post('', async (req,resp) => {
 
     try{
