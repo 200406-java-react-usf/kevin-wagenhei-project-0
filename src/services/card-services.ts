@@ -19,6 +19,10 @@ export class CardService {
         this.cardRepo = cardRepo;
     }
 
+    /** 
+     * Retrieves an Array of Cards from the database
+    */
+
     async getAllCards(): Promise<Card[]>{
 
         let result = await this.cardRepo.getAll();
@@ -30,6 +34,11 @@ export class CardService {
         return result;
 
     }
+
+    /**
+     * Retrieves a Card given an ID
+     * @param id {string} id : Unique number given to each card for Identification
+     */
 
     async getCardById(id: number): Promise<Card> {        
 
@@ -47,6 +56,11 @@ export class CardService {
 
     }
 
+    /**
+     * Returns an array of cards that match the Rarity given in the input.
+     * @param rarity {string} Rarity you are searching for.
+     */
+
     async getCardByRarity(rarity: string): Promise<Card[]>{
 
         if(!isValidString(rarity)){
@@ -62,6 +76,11 @@ export class CardService {
         return cards;
 
     }
+
+    /**
+     * Finds a Card based on the name.
+     * @param name {string} The name of the Card.
+     */
     
     async getCardByName(name: string): Promise<Card>{
 
@@ -78,6 +97,11 @@ export class CardService {
         return card;
 
     }
+
+    /**
+     * Adds a new card to the database
+     * @param newCard {Card} Card object
+     */
 
     async addNewCard(newCard: Card): Promise<Card>{
 
@@ -104,6 +128,11 @@ export class CardService {
             
     }
 
+    /**
+     * Checks if the function exists in the database
+     * @param name {string} Name of the card
+     */
+
     async isCardAlreadyAdded(name:string): Promise<boolean>{
 
         try{
@@ -115,6 +144,11 @@ export class CardService {
         return false;
 
     }
+
+    /**
+     * Retrives a Card from the database given a correct Key/Value pair.
+     * @param queryObj {any} Object with the key and value to search for 
+     */
 
     async getCardByUniqueKey(queryObj: any): Promise<Card>{
 
@@ -153,6 +187,11 @@ export class CardService {
 
     }
 
+    /**
+     * Takes in a new card object to update an existing card in the database. Uses ID to find the existing card, and changes the values in the existing object.
+     * @param updatedCard {Card} Card Object with the new values you want to update
+     */
+
     async updateCard(updatedCard: Card): Promise<Card>{
 
         try{
@@ -184,6 +223,11 @@ export class CardService {
         }
 
     }
+
+    /**
+     * Deletes a card given the JSON object from the DELETE HTTP request
+     * @param jsonObj {Object} JSON object from the DELETE HTTP request
+     */
 
     async deleteCard(jsonObj: Object): Promise<boolean>{
 

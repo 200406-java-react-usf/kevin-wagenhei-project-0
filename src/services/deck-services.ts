@@ -18,6 +18,10 @@ export class DeckService {
         this.deckRepo = deckRepo;
     }
 
+    /**
+     * Returns an Array of all Decks in the database.
+     */
+
     async getAllDecks(): Promise<Deck[]> {
             
         let result = await this.deckRepo.getAll();
@@ -29,6 +33,11 @@ export class DeckService {
         return result;
     
     }
+
+    /**
+     * Returns a Deck Array of all the cards in a deck given an ID.
+     * @param id {number} Unique number given to each Deck when created.
+     */
 
     async getDeckById(id: number): Promise<Deck[]> {
 
@@ -45,6 +54,11 @@ export class DeckService {
         return deck;
 
     }
+
+    /**
+     * Adds a new Deck to the Database given a Deck Object
+     * @param newDeck {Deck} Deck object
+     */
 
     async addNewDeck(newDeck: Deck): Promise<Deck> {
 
@@ -72,6 +86,12 @@ export class DeckService {
 
     }
 
+    /**
+     * Checks for duplicate names of decks made by the same author
+     * @param authorId {number} Author ID
+     * @param name {string} Name of the deck
+     */
+
     async checkForDuplicateNames(authorId: number, name: string): Promise<boolean>{
 
         try{
@@ -83,6 +103,11 @@ export class DeckService {
         return false;
 
     }
+
+    /**
+     * Takes in a new Deck object to update an existing card in the database. Uses ID to find the existing deck, and changes the values in the existing object.
+     * @param updateDeck {Deck} Deck Object 
+     */
 
     async updateDeck(updateDeck: Deck): Promise<Deck>{
 
@@ -119,6 +144,11 @@ export class DeckService {
 
     }
 
+    /**
+     * Finds a deck given its name from parameters.
+     * @param name {string} Name of the deck. 
+     */
+
     async getDeckByName(name: string): Promise<Deck[]>{
 
         if (!isValidString(name)){
@@ -135,6 +165,11 @@ export class DeckService {
 
     }
 
+    /**
+     * Finds all decks from one author given their authorID
+     * @param id {number} the authorID
+     */
+
     async getDeckByAuthorId(id: number): Promise<Deck[]>{
 
         if(!isValidId(id)){
@@ -150,6 +185,11 @@ export class DeckService {
         return deck;
 
     }
+
+    /**
+     * Deletes a deck given the JSON object from the DELETE HTTP request
+     * @param jsonObj {Object} JSON object from the DELETE HTTP request
+     */
 
     async deleteDeck(jsonObj: Object): Promise<boolean>{
 
