@@ -18,7 +18,7 @@ DeckRouter.get('', async (req, resp) => {
 
 });
 
-DeckRouter.get('/:id', async (req, resp) => {
+DeckRouter.get('/id/:id', async (req, resp) => {
 
     let id = +req.params.id;
 

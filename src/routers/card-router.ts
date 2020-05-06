@@ -20,7 +20,7 @@ CardRouter.get('', async(req,resp) => {
 
 });
 
-CardRouter.get('/:id', async (req, resp) => {
+CardRouter.get('/id/:id', async (req, resp) => {
 
     const id = +req.params.id;
 
@@ -41,6 +41,21 @@ CardRouter.get('/rarity/:rarity', async (req, resp) => {
 
     try{
         let payload = await cardService.getCardByRarity(rarity);
+        resp.status(200).json(payload);
+    } catch(e){
+        resp.status(e.statusCode).json(e);
+    }
+
+    resp.send();
+
+});
+
+CardRouter.get('/name/:name', async (req, resp) => {
+
+    const name = req.params.name;
+
+    try{
+        let payload = await cardService.getCardByName(name);
         resp.status(200).json(payload);
     } catch(e){
         resp.status(e.statusCode).json(e);
