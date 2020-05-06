@@ -1,4 +1,3 @@
-import {CrudRepository} from './crud-repo';
 import {Deck} from '../models/decks';
 import {InternalServerError} from '../errors/errors';
 import {PoolClient} from 'pg';
@@ -20,6 +19,10 @@ export class DeckRepository{
         on ca.id = dc.card_id
     `;
 
+    /**
+     * Returns an Array of all Decks in the database.
+     */
+
     async getAll(): Promise<Deck[]>{
 
         let client: PoolClient;
@@ -37,6 +40,11 @@ export class DeckRepository{
 
     }
 
+    /**
+     * Returns a Deck Array of all the cards in a deck given an ID.
+     * @param id {number} Unique number given to each Deck when created.
+     */
+
     async getById(id: number): Promise<Deck[]>{
 
         let client: PoolClient;
@@ -53,6 +61,11 @@ export class DeckRepository{
         }
 
     }
+
+    /**
+     * Adds a new Deck to the Database given a Deck Object
+     * @param newDeck {Deck} Deck object
+     */
 
     async save(newDeck: Deck): Promise<Deck>{
 
@@ -89,6 +102,11 @@ export class DeckRepository{
         }
 
     }
+
+    /**
+     * Takes in a new Deck object to update an existing card in the database. Uses ID to find the existing deck, and changes the values in the existing object.
+     * @param updatedDeck {Deck} Deck Object 
+     */
 
     async update(updatedDeck: Deck): Promise<Deck>{
 
@@ -128,6 +146,11 @@ export class DeckRepository{
 
     }
 
+    /**
+     * Deletes a Deck in the database. Finds the deck to delete by ID
+     * @param id {number} Unique ID of the deck being deleted
+     */
+
     async deleteById(id: number): Promise<boolean>{
 
         let client: PoolClient;
@@ -147,6 +170,11 @@ export class DeckRepository{
 
     }
 
+    /**
+     * Finds a deck given its name from parameters.
+     * @param input {string} Name of the deck. 
+     */
+
     async getByName(input: string): Promise<Deck[]>{
 
         let client: PoolClient;
@@ -164,6 +192,11 @@ export class DeckRepository{
 
     }
 
+    /**
+     * Finds all decks from one author given their authorID
+     * @param id {number} the authorID
+     */
+
     async getByAuthorId(id: number): Promise<Deck[]>{         
 
         let client: PoolClient;
@@ -180,6 +213,12 @@ export class DeckRepository{
         }
 
     }
+
+    /**
+     * Finds a deck based on the ID and the Author ID
+     * @param authorId {number} Author ID
+     * @param deckName {string} Name of the deck
+     */
 
     async getByAuthorIdAndName(authorId: number, deckName: string): Promise<number>{
 
